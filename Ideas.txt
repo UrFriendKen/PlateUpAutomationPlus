@@ -1,0 +1,3 @@
+Change Teleporter Pairings (All former partners to auto reassign)
+Consumables don't block tables
+Pick Up items and store?
