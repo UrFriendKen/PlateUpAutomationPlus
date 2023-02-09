@@ -401,3 +401,5 @@ FodyWeavers.xsd
 /WorkshopFolder/content/**/*.dll
 
 content/
+
+[Bb]lend
