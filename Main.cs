@@ -9,9 +9,11 @@ using KitchenLib.References;
 using KitchenLib.Utils;
 using KitchenMods;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 // Namespace should have "Kitchen" in the beginning
 namespace KitchenAutomationPlus
@@ -23,7 +25,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.2.0";
+        public const string MOD_VERSION = "1.3.0";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -46,6 +48,7 @@ namespace KitchenAutomationPlus
 
         public const string LAZY_MIXER_ENABLED_ID = "lazyMixerEnabled";
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
+        //public const string GRABBABLE_BEANS_ENABLED_ID = "grabbableBeansEnabled";
         public const string REFILLED_BROTH_CHANGE_ID = "refilledBrothChange";
 
         internal static PreferencesManager PrefManager;
@@ -55,7 +58,7 @@ namespace KitchenAutomationPlus
         protected override void OnInitialise()
         {
             LogWarning($"{MOD_GUID} v{MOD_VERSION} in use!");
-
+            
             try
             {
                 World.GetExistingSystem<InteractRotatePush>().Enabled = false;
@@ -117,6 +120,32 @@ namespace KitchenAutomationPlus
         {
         }
 
+        private void UpdateBeans()
+        {
+            Main.LogInfo("Updating Beans to be grabbable (Grabbable Beans - QuackAndCheese)");
+            // Bean Provider
+            var beanProvider = GDOUtils.GetExistingGDO(ApplianceReferences.SourceBeans) as Appliance;
+
+            var beanItem = GDOUtils.GetExistingGDO(ItemReferences.BeansIngredient) as Item;
+
+            beanProvider.Properties = new List<IApplianceProperty>()
+            {
+                KitchenPropertiesUtils.GetUnlimitedCItemProvider(beanItem.ID)
+            };
+
+            beanItem.Prefab = Bundle.LoadAsset<GameObject>("Canned_Bean");
+
+            MaterialUtils.ApplyMaterial<MeshRenderer>(beanItem.Prefab, "CanBeans", new Material[] {
+                MaterialUtils.GetExistingMaterial("Bean")
+            });
+            MaterialUtils.ApplyMaterial<MeshRenderer>(beanItem.Prefab, "CanBeanJuice", new Material[] {
+                MaterialUtils.GetExistingMaterial("Bean - Juice")
+            });
+            MaterialUtils.ApplyMaterial<MeshRenderer>(beanItem.Prefab, "Can", new Material[] {
+                MaterialUtils.GetExistingMaterial("Metal Very Dark")
+            });
+        }
+
         protected override void OnPostActivate(KitchenMods.Mod mod)
         {
             // TODO: Uncomment the following if you have an asset bundle.
@@ -129,15 +158,15 @@ namespace KitchenAutomationPlus
             // Register custom GDOs
             AddGameData();
 
+            PrefManager = new PreferencesManager(MOD_GUID, MOD_NAME);
+            CreatePreferences();
+
             // Perform actions when game data is built
             Events.BuildGameDataEvent += delegate (object s, BuildGameDataEventArgs args)
             {
-                
+                UpdateBeans();
+                args.gamedata.ProcessesView.Initialise(args.gamedata);
             };
-
-            PrefManager = new PreferencesManager(MOD_GUID, MOD_NAME);
-
-            CreatePreferences();
         }
 
         private void CreatePreferences()
@@ -164,6 +193,13 @@ namespace KitchenAutomationPlus
                 false,
                 new bool[] { false, true },
                 new string[] { "Disabled", "Enabled" });
+            //PrefManager.AddLabel("Grabbable Beans");
+            //PrefManager.AddOption<bool>(
+            //    GRABBABLE_BEANS_ENABLED_ID,
+            //    "Grabbable Beans",
+            //    false,
+            //    new bool[] { false, true },
+            //    new string[] { "Disabled", "Enabled" });
             PrefManager.AddSpacer();
             PrefManager.AddSpacer();
             PrefManager.SubmenuDone();
