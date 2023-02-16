@@ -1,0 +1,15 @@
+CHeldBy
+CAppliance
+CApplyingProcess
+CItemProvider
+CDynamicItemProvider
+CIsInteractive
+CPosition
+CRequiresView
+CLinkedView
+CBeingActedOnBy
+CAffectedBy
+CAttachments
+CDisableAutomation
+CHeldAppliance
+Marker

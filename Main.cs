@@ -25,7 +25,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.3.0";
+        public const string MOD_VERSION = "1.4.0";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -45,7 +45,7 @@ namespace KitchenAutomationPlus
         public const string SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID = "smartGrabberAllowFilterChangeDuringDay";
         public const string TELEPORTER_ALLOW_UNASSIGN_ID = "teleporterAllowUnassign";
         public const string BIN_GRAB_LEVEL_ID = "binGrabLevel";
-
+        public const string DISHWASHER_AUTO_START_ID = "dishwasherAutoStart";
         public const string LAZY_MIXER_ENABLED_ID = "lazyMixerEnabled";
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
         //public const string GRABBABLE_BEANS_ENABLED_ID = "grabbableBeansEnabled";
@@ -204,6 +204,26 @@ namespace KitchenAutomationPlus
             PrefManager.AddSpacer();
             PrefManager.SubmenuDone();
 
+            PrefManager.AddSubmenu("Modified Appliances", "Modified Appliances");
+            PrefManager.AddLabel("Modified Appliances Settings");
+            PrefManager.AddLabel("Auto Grab Trash Bag When");
+            PrefManager.AddOption<int>(
+                BIN_GRAB_LEVEL_ID,
+                "Grab Trash Bag When",
+                0,
+                new int[] { 0, 1 },
+                new string[] { "Not Empty", "Full" });
+            PrefManager.AddLabel("Auto Start Dishwasher");
+            PrefManager.AddOption<int>(
+                DISHWASHER_AUTO_START_ID,
+                "Auto Start Dishwasher",
+                0,
+                new int[] { 0, 1 },
+                new string[] { "Never", "When Full" });
+            PrefManager.AddSpacer();
+            PrefManager.AddSpacer();
+            PrefManager.SubmenuDone();
+
             PrefManager.AddSubmenu("Grabber", "grabber");
             PrefManager.AddLabel("Grabber Settings");
             PrefManager.AddSpacer();
@@ -235,19 +255,6 @@ namespace KitchenAutomationPlus
                 0,
                 new int[] { -1, 0, 1, 2 },
                 new string[] { "Never", "Anytime", "In Practice Mode Only", "In Practice Mode and Prep" });
-            PrefManager.AddSpacer();
-            PrefManager.AddSpacer();
-            PrefManager.SubmenuDone();
-
-            PrefManager.AddSubmenu("Bin", "bin");
-            PrefManager.AddLabel("Bin Settings");
-            PrefManager.AddLabel("Grab Trash Bag When");
-            PrefManager.AddOption<int>(
-                BIN_GRAB_LEVEL_ID,
-                "Grab Trash Bag When",
-                0,
-                new int[] { 0, 1 },
-                new string[] { "Not Empty", "Full" });
             PrefManager.AddSpacer();
             PrefManager.AddSpacer();
             PrefManager.SubmenuDone();
