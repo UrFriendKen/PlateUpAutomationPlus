@@ -34,7 +34,9 @@ namespace KitchenAutomationPlus.Customs
                 Total = 0f
             },
 
-            new CItemHolder()
+            new CItemHolder(),
+
+            new CApplianceGrabPoint()
         };
         public override bool IsNonInteractive => false;
         public override OccupancyLayer Layer => OccupancyLayer.Default;
