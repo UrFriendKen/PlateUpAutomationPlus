@@ -16,7 +16,8 @@ namespace KitchenAutomationPlus
             entityQuery = GetEntityQuery(new QueryHelper()
                 .All(typeof(CAppliance),
                 typeof(CSingleStepAutomation),
-                typeof(CItemHolder)));
+                typeof(CItemHolder))
+                .None(typeof(CRequiresActivation)));
         }
 
         protected override void OnUpdate()

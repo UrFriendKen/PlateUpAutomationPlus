@@ -1,5 +1,6 @@
 ﻿using Kitchen;
 using KitchenAutomationPlus.Customs;
+using KitchenLib.References;
 using KitchenLib.Utils;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -7,12 +8,14 @@ using Unity.Entities;
 
 namespace KitchenAutomationPlus
 {
-    public struct CSingleStepAutomation : IComponentData
+    internal struct CAutomatedRequireActivation : IComponentData
     {
-        public int PreprocessedItemID;
+        public bool IsSingleStep;
+        public bool IsRequireItem;
+        public bool Performed;
     }
 
-    public class AttachCSingleStepAutomation : StartOfDaySystem
+    public class AttachCAutomatedRequireActivation : StartOfDaySystem
     {
         private EntityQuery applianceQuery;
 
@@ -23,10 +26,10 @@ namespace KitchenAutomationPlus
             base.Initialise();
             applianceQuery = GetEntityQuery(new QueryHelper()
                 .All(typeof(CAppliance))
-                .None(typeof(CSingleStepAutomation)));
+                .None(typeof(CAutomatedRequireActivation)));
             _applicableApplianceIDs = new HashSet<int>
             {
-                GDOUtils.GetCustomGameDataObject<LazyMixer>().ID
+                GDOUtils.GetExistingGDO(ApplianceReferences.Microwave).ID
             };
         }
 
@@ -38,12 +41,14 @@ namespace KitchenAutomationPlus
                 if (!Require(entity, out CAppliance appliance))
                 {
                     continue;
-                }    
+                }
                 if (_applicableApplianceIDs.Contains(appliance.ID))
                 {
-                    Set(entity, new CSingleStepAutomation()
+                    Set(entity, new CAutomatedRequireActivation()
                     {
-                        PreprocessedItemID = 0
+                        IsSingleStep = true,
+                        IsRequireItem = true,
+                        Performed = false
                     });
                 }
             }

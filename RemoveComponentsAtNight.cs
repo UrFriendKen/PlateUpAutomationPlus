@@ -3,14 +3,15 @@ using Unity.Entities;
 
 namespace KitchenAutomationPlus
 {
-    public class RemoveCSingleStepAutomationAtNight : RestaurantSystem
+    public class RemoveComponentsAtNight : RestaurantSystem
     {
         public EntityQuery Appliances;
 
         protected override void Initialise()
         {
             base.Initialise();
-            Appliances = GetEntityQuery(typeof(CAppliance));
+            Appliances = GetEntityQuery(new QueryHelper()
+                .Any(typeof(CSingleStepAutomation), typeof(CAutomatedRequireActivation)));
         }
 
         protected override void OnUpdate()
@@ -18,6 +19,7 @@ namespace KitchenAutomationPlus
             if (!HasSingleton<SIsDayTime>())
             {
                 base.EntityManager.RemoveComponent<CSingleStepAutomation>(Appliances);
+                base.EntityManager.RemoveComponent<CAutomatedRequireActivation>(Appliances);
             }
         }
     }

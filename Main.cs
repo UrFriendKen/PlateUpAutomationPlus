@@ -45,6 +45,7 @@ namespace KitchenAutomationPlus
         public const string TELEPORTER_ALLOW_UNASSIGN_ID = "teleporterAllowUnassign";
         public const string BIN_GRAB_LEVEL_ID = "binGrabLevel";
         public const string DISHWASHER_AUTO_START_ID = "dishwasherAutoStart";
+        public const string MICROWAVE_AUTO_START_ID = "microwaveAutoStart";
         public const string LAZY_MIXER_ENABLED_ID = "lazyMixerEnabled";
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
         //public const string GRABBABLE_BEANS_ENABLED_ID = "grabbableBeansEnabled";
@@ -232,6 +233,13 @@ namespace KitchenAutomationPlus
                 0,
                 new int[] { 0, 1 },
                 new string[] { "Never", "When Full" });
+            PrefManager.AddLabel("Auto Start Microwave");
+            PrefManager.AddOption<int>(
+                MICROWAVE_AUTO_START_ID,
+                "Auto Start Microwave",
+                0,
+                new int[] { 0, 1 },
+                new string[] { "Never", "When Has Item" });
             PrefManager.AddSpacer();
             PrefManager.AddSpacer();
             PrefManager.SubmenuDone();
