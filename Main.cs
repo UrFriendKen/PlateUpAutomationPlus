@@ -252,8 +252,8 @@ namespace KitchenAutomationPlus
                 GRABBER_ALLOW_ROTATE_DURING_DAY_ID,
                 "Allow Rotate",
                 0,
-                new int[]{ 0, 1, 2 },
-                new string[] { "In Practice Mode and Day", "In Practice Mode Only", "In Practice Mode and Prep" });
+                new int[]{ -1, 0, 1, 2 },
+                new string[] { "Anytime", "In Practice Mode and Day", "In Practice Mode Only", "In Practice Mode and Prep" });
             PrefManager.AddLabel("Allow Filter Change");
             PrefManager.AddOption<int>(
                 SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID,

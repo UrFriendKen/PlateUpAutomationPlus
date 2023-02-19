@@ -14,7 +14,7 @@ namespace KitchenAutomationPlus
 
         protected override bool IsPossible(ref InteractionData data)
         {
-            if (!Has<SIsNightTime>() || Main.PrefManager.Get<int>(Main.GRABBER_ALLOW_ROTATE_DURING_DAY_ID) < 2)
+            if (!Has<SIsNightTime>() || (-1 < Main.PrefManager.Get<int>(Main.GRABBER_ALLOW_ROTATE_DURING_DAY_ID) && Main.PrefManager.Get<int>(Main.GRABBER_ALLOW_ROTATE_DURING_DAY_ID) < 2))
             {
                 return false;
             }
