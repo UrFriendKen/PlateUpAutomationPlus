@@ -50,6 +50,7 @@ namespace KitchenAutomationPlus
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
         //public const string GRABBABLE_BEANS_ENABLED_ID = "grabbableBeansEnabled";
         public const string REFILLED_BROTH_CHANGE_ID = "refilledBrothChange";
+        public const string CONVEYORMIXER_CAN_TAKE_FOOD_ID = "conveyorMixerCanTakeFood";
 
         internal static PreferencesManager PrefManager;
 
@@ -133,7 +134,7 @@ namespace KitchenAutomationPlus
         {
         }
 
-        private void UpdateBeans()
+        private void UpdateAppliances()
         {
             Main.LogInfo("Updating Beans to be grabbable (Grabbable Beans - QuackAndCheese)");
             // Bean Provider
@@ -157,6 +158,24 @@ namespace KitchenAutomationPlus
             MaterialUtils.ApplyMaterial<MeshRenderer>(beanItem.Prefab, "Can", new Material[] {
                 MaterialUtils.GetExistingMaterial("Metal Very Dark")
             });
+
+
+
+
+            if (PrefManager.Get<int>(CONVEYORMIXER_CAN_TAKE_FOOD_ID) == 1)
+            {
+                Main.LogInfo("Updating conveyor mixer prefabl to add CApplianceGrabPoint");
+                var conveyorMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerPusher) as Appliance;
+                if (conveyorMixer != null)
+                {
+                    conveyorMixer.Properties.Add(new CApplianceGrabPoint());
+                    Main.LogInfo("Successfully added CApplianceGrabPoint");
+                }
+                else
+                {
+                    Main.LogInfo("Could not find Conveyor Mixer GDO!");
+                }
+            }
         }
 
         protected override void OnPostActivate(KitchenMods.Mod mod)
@@ -177,7 +196,7 @@ namespace KitchenAutomationPlus
             // Perform actions when game data is built
             Events.BuildGameDataEvent += delegate (object s, BuildGameDataEventArgs args)
             {
-                UpdateBeans();
+                UpdateAppliances();
                 args.gamedata.ProcessesView.Initialise(args.gamedata);
             };
         }
@@ -190,7 +209,7 @@ namespace KitchenAutomationPlus
 
             PrefManager.AddSubmenu("Custom Appliances", "Custom Appliances");
             PrefManager.AddLabel("Custom Appliance Settings");
-            PrefManager.AddInfo("Disabling prevents Custom Apppliances from showing up in upgrades. They will still appear in the shop as upgraded blueprints");
+            PrefManager.AddInfo("Disabling prevents Custom Apppliances from showing up. Changed settings only takes effect upon game restart.");
             PrefManager.AddSpacer();
             PrefManager.AddLabel("Lazy Mixer");
             PrefManager.AddOption<bool>(
@@ -240,6 +259,14 @@ namespace KitchenAutomationPlus
                 0,
                 new int[] { 0, 1 },
                 new string[] { "Never", "When Has Item" });
+            PrefManager.AddLabel("Take Food From Conveyor Mixer");
+            PrefManager.AddInfo("Only works for newly placed Conveyor Mixers. Requires game restart.");
+            PrefManager.AddOption<int>(
+                CONVEYORMIXER_CAN_TAKE_FOOD_ID,
+                "Take Food From Conveyor Mixer",
+                0,
+                new int[] { 0, 1 },
+                new string[] { "Disabled", "Enabled" });
             PrefManager.AddSpacer();
             PrefManager.AddSpacer();
             PrefManager.SubmenuDone();
