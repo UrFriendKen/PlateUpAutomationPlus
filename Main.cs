@@ -259,8 +259,8 @@ namespace KitchenAutomationPlus
                 SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID,
                 "Allow Filter Change",
                 0,
-                new int[] { 0, 1 },
-                new string[] { "In Practice Mode and Day", "In Practice Mode Only" });
+                new int[] { 0, 1, 2 },
+                new string[] { "In Practice Mode and Day", "In Practice Mode Only", "Never" });
             PrefManager.AddSpacer();
             PrefManager.AddSpacer();
             PrefManager.SubmenuDone();

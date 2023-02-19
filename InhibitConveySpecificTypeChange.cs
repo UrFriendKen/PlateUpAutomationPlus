@@ -29,16 +29,20 @@ namespace KitchenAutomationPlus
         {
             
             NativeArray<Entity> conveyors = ConveyorsQuery.ToEntityArray(Allocator.Temp);
-            if (Has<SPracticeMode>() || Main.PrefManager.Get<int>(Main.SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID) == 0)
+
+            if (Main.PrefManager.Get<int>(Main.SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID) < 2)
             {
-                for (int i = 0; i < conveyors.Length; i++)
+                if (Has<SPracticeMode>() || Main.PrefManager.Get<int>(Main.SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID) == 0)
                 {
-                    if (Has<CSpecificType>(conveyors[i]))
+                    for (int i = 0; i < conveyors.Length; i++)
                     {
-                        EntityManager.RemoveComponent<CSpecificType>(conveyors[i]);
+                        if (Has<CSpecificType>(conveyors[i]))
+                        {
+                            EntityManager.RemoveComponent<CSpecificType>(conveyors[i]);
+                        }
                     }
+                    return;
                 }
-                return;
             }
             
             NativeArray<CConveyPushItems> cConveyPushItems = ConveyorsQuery.ToComponentDataArray<CConveyPushItems>(Allocator.Temp);
