@@ -11,7 +11,7 @@ namespace KitchenAutomationPlus.Customs
 {
     public class LazyMixer : CustomAppliance
     {
-        public override int BaseGameDataObjectID => ApplianceReferences.Mixer;
+        public override int BaseGameDataObjectID => ApplianceReferences.MixerHeated;
         public override string UniqueNameID => "lazymixer";
         public override GameObject Prefab => Main.Bundle.LoadAsset<GameObject>("Mixer - Lazy");
         public override List<IApplianceProperty> Properties { get => ((Appliance)GDOUtils.GetExistingGDO(ApplianceReferences.Mixer)).Properties; protected set => base.Properties = value; }

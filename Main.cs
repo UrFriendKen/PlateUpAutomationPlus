@@ -24,7 +24,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.4.1";
+        public const string MOD_VERSION = "1.4.2";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -72,35 +72,48 @@ namespace KitchenAutomationPlus
 
         private void UpdateUpgrades()
         {
-            if (PrefManager.Get<bool>(SMART_GRABBER_ROTATING_ENABLED_ID))
+            Appliance smartRotatingGrabber = GetModdedGDO<Appliance, SmartRotatingGrabber>();
+            if (smartRotatingGrabber != null)
             {
-                Appliance grabber = GDOUtils.GetExistingGDO(ApplianceReferences.Grabber) as Appliance;
-                if (grabber != null)
+                if (PrefManager.Get<bool>(SMART_GRABBER_ROTATING_ENABLED_ID))
                 {
-                    grabber.Upgrades.Add(GetModdedGDO<Appliance, SmartRotatingGrabber>());
+                    Appliance grabber = GDOUtils.GetExistingGDO(ApplianceReferences.Grabber) as Appliance;
+                    Appliance rotatingGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberRotatable) as Appliance;
+                    Appliance smartGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberSmart) as Appliance;
+                    if (grabber != null && smartRotatingGrabber != null && smartGrabber != null && rotatingGrabber != null)
+                    {
+                        grabber.Upgrades.Add(smartRotatingGrabber);
+                        smartGrabber.Upgrades.Add(smartRotatingGrabber);
+                        smartGrabber.Upgrades.Remove(rotatingGrabber);
+                    }
                 }
-                Appliance rotatingGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberRotatable) as Appliance;
-                Appliance smartGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberSmart) as Appliance;
-                if (smartGrabber != null && rotatingGrabber != null)
+                else
                 {
-                    smartGrabber.Upgrades.Remove(rotatingGrabber);
-                    smartGrabber.Upgrades.Add(GetModdedGDO<Appliance, SmartRotatingGrabber>());
+                    smartRotatingGrabber.IsPurchasable = false;
+                    smartRotatingGrabber.IsPurchasableAsUpgrade = false;
                 }
             }
 
-            if (PrefManager.Get<bool>(LAZY_MIXER_ENABLED_ID))
+
+            Appliance lazymixer = GetModdedGDO<Appliance, LazyMixer>();
+            if (lazymixer != null)
             {
-                Appliance mixer = GDOUtils.GetExistingGDO(ApplianceReferences.Mixer) as Appliance;
-                if (mixer != null)
+                if (PrefManager.Get<bool>(LAZY_MIXER_ENABLED_ID))
                 {
-                    mixer.Upgrades.Add(GetModdedGDO<Appliance, LazyMixer>());
+                    Appliance mixer = GDOUtils.GetExistingGDO(ApplianceReferences.Mixer) as Appliance;
+                    Appliance conveyorMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerPusher) as Appliance;
+                    Appliance rapidMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerRapid) as Appliance;
+                    if (mixer != null && conveyorMixer != null && rapidMixer != null)
+                    {
+                        mixer.Upgrades.Add(lazymixer);
+                        conveyorMixer.Upgrades.Add(lazymixer);
+                        conveyorMixer.Upgrades.Remove(rapidMixer);
+                    }
                 }
-                Appliance conveyorMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerPusher) as Appliance;
-                Appliance rapidMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerRapid) as Appliance;
-                if (conveyorMixer != null && rapidMixer != null)
+                else
                 {
-                    conveyorMixer.Upgrades.Remove(rapidMixer);
-                    conveyorMixer.Upgrades.Add(GetModdedGDO<Appliance, LazyMixer>());
+                    lazymixer.IsPurchasable = false;
+                    lazymixer.IsPurchasableAsUpgrade = false;
                 }
             }
         }
