@@ -1,6 +1,7 @@
 ﻿using Kitchen;
 using KitchenAutomationPlus.Customs;
 using KitchenAutomationPlus.Preferences;
+//using KitchenAutomationPlus.Systems.Activation;
 using KitchenData;
 using KitchenLib;
 using KitchenLib.Customs;
@@ -22,9 +23,9 @@ namespace KitchenAutomationPlus
         // GUID must be unique and is recommended to be in reverse domain name notation
         // Mod Name is displayed to the player and listed in the mods menu
         // Mod Version must follow semver notation e.g. "1.2.3"
-        public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
-        public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.4.2";
+        public const string MOD_GUID = "IcedMilo.PlateUp.KitchenAutomationPlus";
+        public const string MOD_NAME = "KitchenAutomationPlus";
+        public const string MOD_VERSION = "1.5.0";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -176,6 +177,21 @@ namespace KitchenAutomationPlus
                     Main.LogInfo("Could not find Conveyor Mixer GDO!");
                 }
             }
+
+
+            //CConditionalActivation dishWasherCondition = new CConditionalActivation();
+            //dishWasherCondition.IsAutomatic = true;
+            //NonpersistentComponentRegistry.AddNonpersistentComponent(ApplianceReferences.DishWasher, new CConditionalActivation()
+            //{
+            //    IsAutomatic = true,
+            //    AllowUseWhenEmpty = true,
+            //    OnlyWhenFull = true,
+            //    ActivateWhenEmpty = false,
+            //    ActivateWhenHasItem = true,
+            //    ActivateWhenFull= false,
+            //    IsHolderFilter = false,
+            //    IsProviderFilter = true
+            //});
         }
 
         protected override void OnPostActivate(KitchenMods.Mod mod)

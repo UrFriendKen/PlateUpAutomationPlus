@@ -17,7 +17,8 @@
 		<!-- Set the next line to 'true' if you have an asset bundle -->
 		<EnableAssetBundleDeploy>true</EnableAssetBundleDeploy>
 		<!-- Change this if your mod.assets is located elsewhere than the default location -->
-		<AssetBundlePath>$(ProjectDir)content\automationplus.assets</AssetBundlePath>
+		<AssetBundlePath>$(ProjectDir)content\automationplus_urp.assets</AssetBundlePath>
+		<RootNamespace>Kitchen$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 	</PropertyGroup>
 	
 	<!-- Exclude build artifacts and Unity project -->
@@ -36,6 +37,48 @@
 	  <None Remove="plateup_mod_metadata.json" />
 	  <None Remove="README.txt" />
 	  <None Remove="*.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Systems\Activation\ActivationModifierComponents.cs" />
+	  <Compile Remove="Systems\Activation\AttachNonpersistentActivationComponents.cs" />
+	  <Compile Remove="Systems\Activation\AutomatedActivation.cs" />
+	  <Compile Remove="Systems\Activation\CleanupActivationComponents.cs" />
+	  <Compile Remove="Systems\Activation\InhibitActivation.cs" />
+	  <Compile Remove="Systems\ComponentApplicationGroup.cs" />
+	  <Compile Remove="Systems\ComponentApplicationSystem.cs" />
+	  <Compile Remove="Systems\ComponentApplicationSystemBase.cs" />
+	  <Compile Remove="Systems\ComponentCleanupGroup.cs" />
+	  <Compile Remove="Systems\ComponentCleanupSystemAtStartOfNight.cs" />
+	  <Compile Remove="Systems\ComponentEarlyApplicationGroup.cs" />
+	  <Compile Remove="Systems\ComponentEarlyApplicationSystem.cs" />
+	  <Compile Remove="Systems\ComponentInitializationAtStartOfDay.cs" />
+	  <Compile Remove="Systems\ComponentInitializationGroup.cs" />
+	  <Compile Remove="Systems\ComponentLateApplicationGroup.cs" />
+	  <Compile Remove="Systems\ComponentLateApplicationSystem.cs" />
+	  <Compile Remove="Systems\ComponentManagementSystem.cs" />
+	  <Compile Remove="Systems\ComponentReactionGroup.cs" />
+	  <Compile Remove="Systems\ComponentReactionSystem.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="Systems\Activation\ActivationModifierComponents.cs" />
+	  <None Include="Systems\Activation\AttachNonpersistentActivationComponents.cs" />
+	  <None Include="Systems\Activation\AutomatedActivation.cs" />
+	  <None Include="Systems\Activation\CleanupActivationComponents.cs" />
+	  <None Include="Systems\Activation\InhibitActivation.cs" />
+	  <None Include="Systems\ComponentApplicationGroup.cs" />
+	  <None Include="Systems\ComponentApplicationSystem.cs" />
+	  <None Include="Systems\ComponentApplicationSystemBase.cs" />
+	  <None Include="Systems\ComponentCleanupGroup.cs" />
+	  <None Include="Systems\ComponentCleanupSystemAtStartOfNight.cs" />
+	  <None Include="Systems\ComponentEarlyApplicationGroup.cs" />
+	  <None Include="Systems\ComponentEarlyApplicationSystem.cs" />
+	  <None Include="Systems\ComponentInitializationAtStartOfDay.cs" />
+	  <None Include="Systems\ComponentInitializationGroup.cs" />
+	  <None Include="Systems\ComponentLateApplicationGroup.cs" />
+	  <None Include="Systems\ComponentLateApplicationSystem.cs" />
+	  <None Include="Systems\ComponentManagementSystem.cs" />
+	  <None Include="Systems\ComponentReactionGroup.cs" />
+	  <None Include="Systems\ComponentReactionSystem.cs" />
 	</ItemGroup>
   
 	<ItemGroup>
