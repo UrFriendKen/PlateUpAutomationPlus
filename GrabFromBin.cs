@@ -49,7 +49,7 @@ namespace KitchenAutomationPlus
                     {
                         continue;
                     }
-                    if (bin.EmptyBinItem == 0 || (grab.GrabSpecificType && (bin.EmptyBinItem != grab.SpecificType)))
+                    if (bin.EmptyBinItem == 0 || grab.GrabSpecificType && bin.EmptyBinItem != grab.SpecificType)
                     {
                         continue;
                     }
@@ -57,8 +57,8 @@ namespace KitchenAutomationPlus
                     {
                         continue;
                     }
-                    if ((bin.CurrentAmount > 0 && Main.PrefManager.Get<int>(Main.BIN_GRAB_LEVEL_ID) == 0) || 
-                        (bin.CurrentAmount >= bin.Capacity && Main.PrefManager.Get<int>(Main.BIN_GRAB_LEVEL_ID) == 1))
+                    if (bin.CurrentAmount > 0 && Main.PrefManager.Get<int>(Main.BIN_GRAB_LEVEL_ID) == 0 ||
+                        bin.CurrentAmount >= bin.Capacity && Main.PrefManager.Get<int>(Main.BIN_GRAB_LEVEL_ID) == 1)
                     {
                         Set(EntityManager.CreateEntity(), new CCreateItem
                         {
@@ -76,5 +76,5 @@ namespace KitchenAutomationPlus
             Conveyors.Dispose();
         }
     }
-    
+
 }

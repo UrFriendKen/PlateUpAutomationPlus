@@ -14,7 +14,7 @@ namespace KitchenAutomationPlus
         protected override void Initialise()
         {
             base.Initialise();
-            
+
             ConveyorsQuery = GetEntityQuery(new QueryHelper()
                                             .All(typeof(CConveyCooldown),
                                                  typeof(CConveyPushItems),
@@ -22,12 +22,12 @@ namespace KitchenAutomationPlus
                                                  typeof(CPosition))
                                             );
             RequireSingletonForUpdate<SIsSpecificTypeInhibitSystemRunning>();
-            
+
         }
 
         protected override void OnUpdate()
         {
-            
+
             NativeArray<Entity> conveyors = ConveyorsQuery.ToEntityArray(Allocator.Temp);
 
             if (Main.PrefManager.Get<int>(Main.SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID) < 2)
@@ -44,7 +44,7 @@ namespace KitchenAutomationPlus
                     return;
                 }
             }
-            
+
             NativeArray<CConveyPushItems> cConveyPushItems = ConveyorsQuery.ToComponentDataArray<CConveyPushItems>(Allocator.Temp);
             NativeArray<CItemHolder> cItemHolders = ConveyorsQuery.ToComponentDataArray<CItemHolder>(Allocator.Temp);
 
@@ -71,7 +71,7 @@ namespace KitchenAutomationPlus
                     }
                 }
             }
-            
+
         }
     }
 }

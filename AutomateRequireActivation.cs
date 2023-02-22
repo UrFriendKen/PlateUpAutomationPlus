@@ -30,14 +30,14 @@ namespace KitchenAutomationPlus
 
                     if (automatedActivation.Performed)
                     {
-                        if (holder.HeldItem != default(Entity) && automatedActivation.IsSingleStep)
+                        if (holder.HeldItem != default && automatedActivation.IsSingleStep)
                         {
                             continue;
                         }
                         automatedActivation.Performed = false;
                         Set(entity, automatedActivation);
                     }
-                    else if (Main.PrefManager.Get<int>(Main.MICROWAVE_AUTO_START_ID) == 1 && !automatedActivation.Performed && holder.HeldItem != default(Entity))
+                    else if (Main.PrefManager.Get<int>(Main.MICROWAVE_AUTO_START_ID) == 1 && !automatedActivation.Performed && holder.HeldItem != default)
                     {
                         automatedActivation.Performed = true;
                         Set(entity, automatedActivation);

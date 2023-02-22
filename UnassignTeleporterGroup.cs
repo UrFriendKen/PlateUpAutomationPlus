@@ -24,7 +24,7 @@ namespace KitchenAutomationPlus
             {
                 return false;
             }
-            if (!Require(data.Target, out CConveyTeleport teleport) || teleport.Target == default(Entity))
+            if (!Require(data.Target, out CConveyTeleport teleport) || teleport.Target == default)
             {
                 return false;
             }
@@ -35,7 +35,7 @@ namespace KitchenAutomationPlus
         {
             if (Require(data.Target, out CConveyTeleport teleport))
             {
-                teleport.Target = default(Entity);
+                teleport.Target = default;
                 teleport.GroupID = 0;
                 Set(data.Target, teleport);
             }

@@ -37,7 +37,7 @@ namespace KitchenAutomationPlus
                 }
                 entities.Dispose();
             }
-            
+
         }
 
     }
