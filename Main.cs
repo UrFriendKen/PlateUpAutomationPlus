@@ -1,6 +1,7 @@
 ﻿using Kitchen;
 using KitchenAutomationPlus.Customs;
 using KitchenAutomationPlus.Preferences;
+using KitchenAutomationPlus.Systems.PseudoProcess;
 //using KitchenAutomationPlus.Systems.Activation;
 using KitchenData;
 using KitchenLib;
@@ -130,10 +131,34 @@ namespace KitchenAutomationPlus
             Appliance dishWasher = GetExistingGDO<Appliance>(ApplianceReferences.DishWasher);
             if (dishWasher != null)
             {
+                TryRemoveComponentsFromAppliance<Appliance>(ApplianceReferences.DishWasher, new Type[] { typeof(CChangeProviderAfterDuration), typeof(CChangeProviderWhenEmpty) });
+
                 dishWasher.Properties.Add(new CDynamicItemProvider()
                 {
                     StorageFlags = ItemStorage.None
                 });
+
+                CDynamicChangeProvider dishWasherDynamicProvider = new CDynamicChangeProvider(
+                    new int[] { ItemReferences.PlateDirty, ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
+                    new int[] { ItemReferences.Plate, ItemReferences.Plate, ItemReferences.Wok });
+
+                int drinksModCupBobaDirty = -1002751344;
+                int drinksModCup = 23353956;
+                Main.LogInfo("Attempting to add DrinksMod boba cups to dishwasher DynamicProvider");
+                dishWasherDynamicProvider.Add(drinksModCupBobaDirty, drinksModCup);
+                dishWasher.Properties.Add(dishWasherDynamicProvider);
+
+                for (int i = 0; i < dishWasher.Properties.Count; i++)
+                {
+                    if (dishWasher.Properties[i].GetType() == typeof(CTakesDuration))
+                    {
+                        float baseDuration = ((CTakesDuration)dishWasher.Properties[i]).Total;
+                        dishWasher.Properties.Add(new CPseudoProcessDuration(
+                            baseDuration,
+                            new int[] { ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
+                            new float[] { baseDuration * 1.5f, baseDuration * 2f }));
+                    }
+                }
             }
         }
 
@@ -193,21 +218,6 @@ namespace KitchenAutomationPlus
                     Main.LogInfo("Could not find Conveyor Mixer GDO!");
                 }
             }
-
-
-            //CConditionalActivation dishWasherCondition = new CConditionalActivation();
-            //dishWasherCondition.IsAutomatic = true;
-            //NonpersistentComponentRegistry.AddNonpersistentComponent(ApplianceReferences.DishWasher, new CConditionalActivation()
-            //{
-            //    IsAutomatic = true,
-            //    AllowUseWhenEmpty = true,
-            //    OnlyWhenFull = true,
-            //    ActivateWhenEmpty = false,
-            //    ActivateWhenHasItem = true,
-            //    ActivateWhenFull= false,
-            //    IsHolderFilter = false,
-            //    IsProviderFilter = true
-            //});
         }
 
         protected override void OnPostActivate(KitchenMods.Mod mod)
@@ -382,7 +392,7 @@ namespace KitchenAutomationPlus
             return GDOUtils.GetCastedGDO<T>(modName, name);
         }
 
-        private bool TryRemoveComponentsFromAppliance<T>(int id, ComponentType[] componentTypesToRemove) where T : GameDataObject
+        private bool TryRemoveComponentsFromAppliance<T>(int id, Type[] componentTypesToRemove) where T : GameDataObject
         {
             T gDO = Find<T>(id);
 
@@ -391,15 +401,13 @@ namespace KitchenAutomationPlus
                 return false;
             }
 
-            Type[] types = componentTypesToRemove.Cast<Type>().ToArray();
-
             bool success = false;
             if (typeof(T) == typeof(Appliance))
             {
                 Appliance appliance = (Appliance)Convert.ChangeType(gDO, typeof(Appliance));
                 for (int i = appliance.Properties.Count - 1; i > -1; i--)
                 {
-                    if (types.Contains(appliance.Properties[i].GetType()))
+                    if (componentTypesToRemove.Contains(appliance.Properties[i].GetType()))
                     {
                         appliance.Properties.RemoveAt(i);
                         success = true;
@@ -411,7 +419,7 @@ namespace KitchenAutomationPlus
                 Item item = (Item)Convert.ChangeType(gDO, typeof(Item));
                 for (int i = item.Properties.Count - 1; i > -1; i--)
                 {
-                    if (types.Contains(item.Properties[i].GetType()))
+                    if (componentTypesToRemove.Contains(item.Properties[i].GetType()))
                     {
                         item.Properties.RemoveAt(i);
                         success = true;
