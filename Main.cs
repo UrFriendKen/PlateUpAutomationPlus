@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Unity.Entities;
 using UnityEngine;
 
 // Namespace should have "Kitchen" in the beginning
@@ -23,8 +24,8 @@ namespace KitchenAutomationPlus
         // GUID must be unique and is recommended to be in reverse domain name notation
         // Mod Name is displayed to the player and listed in the mods menu
         // Mod Version must follow semver notation e.g. "1.2.3"
-        public const string MOD_GUID = "IcedMilo.PlateUp.KitchenAutomationPlus";
-        public const string MOD_NAME = "KitchenAutomationPlus";
+        public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
+        public const string MOD_NAME = "AutomationPlus";
         public const string MOD_VERSION = "1.5.0";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
@@ -59,6 +60,11 @@ namespace KitchenAutomationPlus
 
         protected override void OnInitialise()
         {
+            foreach (Item item in GameData.Main.Get<Item>())
+            {
+                Main.LogInfo($"{item.name} = {item.ItemStorageFlags}");
+            }
+
             LogWarning($"{MOD_GUID} v{MOD_VERSION} in use!");
             
             try
@@ -118,6 +124,16 @@ namespace KitchenAutomationPlus
                     lazymixer.IsPurchasable = false;
                     lazymixer.IsPurchasableAsUpgrade = false;
                 }
+            }
+
+
+            Appliance dishWasher = GetExistingGDO<Appliance>(ApplianceReferences.DishWasher);
+            if (dishWasher != null)
+            {
+                dishWasher.Properties.Add(new CDynamicItemProvider()
+                {
+                    StorageFlags = ItemStorage.None
+                });
             }
         }
 
@@ -364,6 +380,45 @@ namespace KitchenAutomationPlus
         internal static T Find<T>(string modName, string name) where T : GameDataObject
         {
             return GDOUtils.GetCastedGDO<T>(modName, name);
+        }
+
+        private bool TryRemoveComponentsFromAppliance<T>(int id, ComponentType[] componentTypesToRemove) where T : GameDataObject
+        {
+            T gDO = Find<T>(id);
+
+            if (gDO == null)
+            {
+                return false;
+            }
+
+            Type[] types = componentTypesToRemove.Cast<Type>().ToArray();
+
+            bool success = false;
+            if (typeof(T) == typeof(Appliance))
+            {
+                Appliance appliance = (Appliance)Convert.ChangeType(gDO, typeof(Appliance));
+                for (int i = appliance.Properties.Count - 1; i > -1; i--)
+                {
+                    if (types.Contains(appliance.Properties[i].GetType()))
+                    {
+                        appliance.Properties.RemoveAt(i);
+                        success = true;
+                    }
+                }
+            }
+            else if (typeof(T) == typeof(Item))
+            {
+                Item item = (Item)Convert.ChangeType(gDO, typeof(Item));
+                for (int i = item.Properties.Count - 1; i > -1; i--)
+                {
+                    if (types.Contains(item.Properties[i].GetType()))
+                    {
+                        item.Properties.RemoveAt(i);
+                        success = true;
+                    }
+                }
+            }
+            return success;
         }
 
         #region Logging

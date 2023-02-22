@@ -39,6 +39,7 @@
 	  <None Remove="*.png" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Compile Remove="NonpersistentComponentRegistry.cs" />
 	  <Compile Remove="Systems\Activation\ActivationModifierComponents.cs" />
 	  <Compile Remove="Systems\Activation\AttachNonpersistentActivationComponents.cs" />
 	  <Compile Remove="Systems\Activation\AutomatedActivation.cs" />
@@ -60,6 +61,7 @@
 	  <Compile Remove="Systems\ComponentReactionSystem.cs" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Include="NonpersistentComponentRegistry.cs" />
 	  <None Include="Systems\Activation\ActivationModifierComponents.cs" />
 	  <None Include="Systems\Activation\AttachNonpersistentActivationComponents.cs" />
 	  <None Include="Systems\Activation\AutomatedActivation.cs" />
