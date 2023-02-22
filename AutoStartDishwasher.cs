@@ -5,15 +5,17 @@ using Unity.Entities;
 
 namespace KitchenAutomationPlus
 {
-    internal class AutoStartDishwasher : DaySystem
+    internal class AutoStartDishwasher : RestaurantSystem
     {
+        public struct CHasActivated : IComponentData { };
+
         EntityQuery ApplianceQuery;
 
         protected override void Initialise()
         {
             base.Initialise();
             ApplianceQuery = GetEntityQuery(new QueryHelper()
-                .All(typeof(CAppliance), typeof(CItemProvider), typeof(CChangeProviderAfterDuration), typeof(CIsInactive)));
+                .All(typeof(CAppliance), typeof(CItemProvider), typeof(CIsInactive)));
         }
 
         protected override void OnUpdate()
@@ -25,11 +27,17 @@ namespace KitchenAutomationPlus
                 {
                     if (Require(entity, out CAppliance appliance) && appliance.ID == ApplianceReferences.DishWasher)
                     {
-                        if (Require(entity, out CChangeProviderAfterDuration comp))
+                        if (Require(entity, out CItemProvider provider))
                         {
-                            if (Require(entity, out CItemProvider provider) && provider.Available >= provider.Maximum && provider.ProvidedItem != comp.ReplaceItem)
+                            if (Has<CHasActivated>() && provider.Available < 1)
+                            {
+                                EntityManager.RemoveComponent<CHasActivated>(entity);
+                            }
+
+                            if (!Has<CHasActivated>(entity) && provider.Available >= provider.Maximum)
                             {
                                 Main.LogInfo("Auto-starting Dishwasher");
+                                EntityManager.AddComponent<CHasActivated>(entity);
                                 EntityManager.RemoveComponent<CIsInactive>(entity);
                             }
                         }
@@ -37,8 +45,6 @@ namespace KitchenAutomationPlus
                 }
                 entities.Dispose();
             }
-
         }
-
     }
 }
