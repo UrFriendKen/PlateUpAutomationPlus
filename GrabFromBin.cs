@@ -49,7 +49,7 @@ namespace KitchenAutomationPlus
                     {
                         continue;
                     }
-                    if (bin.EmptyBinItem == 0 || grab.GrabSpecificType && bin.EmptyBinItem != grab.SpecificType)
+                    if (bin.EmptyBinItem == 0 || grab.GrabSpecificType && grab.SpecificType != 0 && bin.EmptyBinItem != grab.SpecificType)
                     {
                         continue;
                     }
