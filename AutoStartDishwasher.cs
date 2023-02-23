@@ -29,9 +29,19 @@ namespace KitchenAutomationPlus
                     {
                         if (Require(entity, out CItemProvider provider))
                         {
-                            if (Has<CHasActivated>() && provider.Available < 1)
+                            if (provider.Maximum <= 0)
                             {
                                 EntityManager.RemoveComponent<CHasActivated>(entity);
+                                continue;
+                            }
+
+                            if (Has<CHasActivated>(entity) && provider.Available < provider.Maximum)
+                            {
+                                Main.LogInfo("Removing CHasActivated.");
+                                Main.LogInfo($"provider.Available = {provider.Available}");
+                                Main.LogInfo($"provider.Maximum = {provider.Maximum}");
+                                EntityManager.RemoveComponent<CHasActivated>(entity);
+                                continue;
                             }
 
                             if (!Has<CHasActivated>(entity) && provider.Available >= provider.Maximum)
@@ -44,6 +54,10 @@ namespace KitchenAutomationPlus
                     }
                 }
                 entities.Dispose();
+            }
+            else
+            {
+                EntityManager.AddComponent<CHasActivated>(ApplianceQuery);
             }
         }
     }
