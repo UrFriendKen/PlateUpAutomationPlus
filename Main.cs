@@ -27,7 +27,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.5.1";
+        public const string MOD_VERSION = "1.5.2";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -51,6 +51,7 @@ namespace KitchenAutomationPlus
         public const string MICROWAVE_AUTO_START_ID = "microwaveAutoStart";
         public const string LAZY_MIXER_ENABLED_ID = "lazyMixerEnabled";
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
+        public const string CONVEYOR_FAST_ENABLED_ID = "conveyorFastEnabled";
         //public const string GRABBABLE_BEANS_ENABLED_ID = "grabbableBeansEnabled";
         public const string REFILLED_BROTH_CHANGE_ID = "refilledBrothChange";
         public const string CONVEYORMIXER_CAN_TAKE_FOOD_ID = "conveyorMixerCanTakeFood";
@@ -101,6 +102,30 @@ namespace KitchenAutomationPlus
                 {
                     smartRotatingGrabber.IsPurchasable = false;
                     smartRotatingGrabber.IsPurchasableAsUpgrade = false;
+                }
+            }
+
+
+            Appliance conveyorfast = GetModdedGDO<Appliance, ConveyorFast>();
+            if (conveyorfast != null)
+            {
+                if (PrefManager.Get<bool>(CONVEYOR_FAST_ENABLED_ID))
+                {
+                    Appliance conveyor = GDOUtils.GetExistingGDO(ApplianceReferences.Belt) as Appliance;
+                    if (conveyor != null)
+                    {
+                        conveyor.Upgrades.Add(conveyorfast);
+                    }
+
+                    if (smartRotatingGrabber != null && PrefManager.Get<bool>(SMART_GRABBER_ROTATING_ENABLED_ID))
+                    {
+                        conveyorfast.Upgrades.Add(smartRotatingGrabber);
+                    }
+                }
+                else
+                {
+                    conveyorfast.IsPurchasable = false;
+                    conveyorfast.IsPurchasableAsUpgrade = false;
                 }
             }
 
@@ -168,6 +193,7 @@ namespace KitchenAutomationPlus
 
             AddGameDataObject<SmartRotatingGrabber>();
             AddGameDataObject<LazyMixer>();
+            AddGameDataObject<ConveyorFast>();
 
             LogInfo("Done loading game data.");
         }
@@ -267,13 +293,13 @@ namespace KitchenAutomationPlus
                 false,
                 new bool[] { false, true },
                 new string[] { "Disabled", "Enabled" });
-            //PrefManager.AddLabel("Grabbable Beans");
-            //PrefManager.AddOption<bool>(
-            //    GRABBABLE_BEANS_ENABLED_ID,
-            //    "Grabbable Beans",
-            //    false,
-            //    new bool[] { false, true },
-            //    new string[] { "Disabled", "Enabled" });
+            PrefManager.AddLabel("Conveyor - Fast");
+            PrefManager.AddOption<bool>(
+                CONVEYOR_FAST_ENABLED_ID,
+                "Conveyor - Fast",
+                false,
+                new bool[] { false, true },
+                new string[] { "Disabled", "Enabled" });
             PrefManager.AddSpacer();
             PrefManager.AddSpacer();
             PrefManager.SubmenuDone();
