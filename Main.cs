@@ -27,7 +27,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.5.2";
+        public const string MOD_VERSION = "1.5.3";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -50,6 +50,7 @@ namespace KitchenAutomationPlus
         public const string DISHWASHER_AUTO_START_ID = "dishwasherAutoStart";
         public const string MICROWAVE_AUTO_START_ID = "microwaveAutoStart";
         public const string LAZY_MIXER_ENABLED_ID = "lazyMixerEnabled";
+        public const string GRABBER_MIXER_ENABLED_ID = "grabberMixerEnabled";
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
         public const string CONVEYOR_FAST_ENABLED_ID = "conveyorFastEnabled";
         //public const string GRABBABLE_BEANS_ENABLED_ID = "grabbableBeansEnabled";
@@ -129,7 +130,6 @@ namespace KitchenAutomationPlus
                 }
             }
 
-
             Appliance lazymixer = GetModdedGDO<Appliance, LazyMixer>();
             if (lazymixer != null)
             {
@@ -141,14 +141,46 @@ namespace KitchenAutomationPlus
                     if (mixer != null && conveyorMixer != null && rapidMixer != null)
                     {
                         mixer.Upgrades.Add(lazymixer);
-                        conveyorMixer.Upgrades.Add(lazymixer);
-                        conveyorMixer.Upgrades.Remove(rapidMixer);
+                        if (!PrefManager.Get<bool>(GRABBER_MIXER_ENABLED_ID))
+                        {
+                            conveyorMixer.Upgrades.Add(lazymixer);
+                            conveyorMixer.Upgrades.Remove(rapidMixer);
+                        }
                     }
                 }
                 else
                 {
                     lazymixer.IsPurchasable = false;
                     lazymixer.IsPurchasableAsUpgrade = false;
+                }
+            }
+
+
+
+            Appliance grabbermixer = GetModdedGDO<Appliance, GrabberMixer>();
+            if (grabbermixer != null)
+            {
+                if (PrefManager.Get<bool>(GRABBER_MIXER_ENABLED_ID))
+                {
+                    Appliance mixer = GDOUtils.GetExistingGDO(ApplianceReferences.Mixer) as Appliance;
+                    Appliance conveyorMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerPusher) as Appliance;
+                    Appliance rapidMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerRapid) as Appliance;
+                    if (mixer != null && conveyorMixer != null && rapidMixer != null)
+                    {
+                        mixer.Upgrades.Add(grabbermixer);
+                        if (PrefManager.Get<bool>(LAZY_MIXER_ENABLED_ID))
+                        {
+                            grabbermixer.Upgrades.Remove(rapidMixer);
+                            grabbermixer.Upgrades.Add(lazymixer);
+                            conveyorMixer.Upgrades.Add(grabbermixer);
+                            conveyorMixer.Upgrades.Remove(rapidMixer);
+                        }
+                    }
+                }
+                else
+                {
+                    grabbermixer.IsPurchasable = false;
+                    grabbermixer.IsPurchasableAsUpgrade = false;
                 }
             }
 
@@ -171,6 +203,17 @@ namespace KitchenAutomationPlus
                 int drinksModCup = 23353956;
                 Main.LogInfo("Attempting to add DrinksMod boba cups to dishwasher DynamicProvider");
                 dishWasherDynamicProvider.Add(drinksModCupBobaDirty, drinksModCup);
+
+                int miniCafeSmallMugDirty = -189783898;
+                int miniCafeSmallMug = 655771011;
+                Main.LogInfo("Attempting to add MiniCafe small mugs to dishwasher DynamicProvider");
+                dishWasherDynamicProvider.Add(miniCafeSmallMugDirty, miniCafeSmallMug);
+
+                int miniCafeBigMugDirty = 1622806730;
+                int miniCafeBigMug = 763104287;
+                Main.LogInfo("Attempting to add MiniCafe big mugs to dishwasher DynamicProvider");
+                dishWasherDynamicProvider.Add(miniCafeBigMugDirty, miniCafeBigMug);
+
                 dishWasher.Properties.Add(dishWasherDynamicProvider);
 
                 for (int i = 0; i < dishWasher.Properties.Count; i++)
@@ -194,6 +237,7 @@ namespace KitchenAutomationPlus
             AddGameDataObject<SmartRotatingGrabber>();
             AddGameDataObject<LazyMixer>();
             AddGameDataObject<ConveyorFast>();
+            AddGameDataObject<GrabberMixer>();
 
             LogInfo("Done loading game data.");
         }
@@ -283,6 +327,13 @@ namespace KitchenAutomationPlus
             PrefManager.AddOption<bool>(
                 LAZY_MIXER_ENABLED_ID,
                 "Lazy Mixer",
+                false,
+                new bool[] { false, true },
+                new string[] { "Disabled", "Enabled" });
+            PrefManager.AddLabel("Grabber Mixer");
+            PrefManager.AddOption<bool>(
+                GRABBER_MIXER_ENABLED_ID,
+                "Grabber Mixer",
                 false,
                 new bool[] { false, true },
                 new string[] { "Disabled", "Enabled" });

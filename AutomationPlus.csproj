@@ -39,6 +39,7 @@
 	  <None Remove="*.png" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Compile Remove="NonpersistentComponentRegis&#xD;&#xA;			   .cs" />
 	  <Compile Remove="NonpersistentComponentRegistry.cs" />
 	  <Compile Remove="Systems\Activation\ActivationModifierComponents.cs" />
 	  <Compile Remove="Systems\Activation\AttachNonpersistentActivationComponents.cs" />
@@ -61,7 +62,6 @@
 	  <Compile Remove="Systems\ComponentReactionSystem.cs" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Include="NonpersistentComponentRegistry.cs" />
 	  <None Include="Systems\Activation\ActivationModifierComponents.cs" />
 	  <None Include="Systems\Activation\AttachNonpersistentActivationComponents.cs" />
 	  <None Include="Systems\Activation\AutomatedActivation.cs" />
@@ -88,6 +88,96 @@
 		<PackageReference Include="Yariazen.PlateUp.ModBuildUtilities" Version="1.6.16" />
 	
 		<!-- For if you build KitchenLib locally -->
+	</ItemGroup>
+  
+	<ItemGroup>
+	  <Reference Include="0Harmony">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\1599600\2898033283\0Harmony.dll</HintPath>
+	  </Reference>
+	  <Reference Include="IngredientLib">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\1599600\2913877103\IngredientLib.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.Common">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.Common.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.FranchiseBuilderMode">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.FranchiseBuilderMode.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.FranchiseMode">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.FranchiseMode.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.GameData">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.GameData.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.Layouts">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.Layouts.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.Networking">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.Networking.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.Persistence">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.Persistence.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.PostgameMode">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.PostgameMode.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.ResearchMode">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.ResearchMode.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.RestaurantMode">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.RestaurantMode.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Kitchen.TutorialMode">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.TutorialMode.dll</HintPath>
+	  </Reference>
+	  <Reference Include="KitchenLib-Workshop">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\1599600\2898069883\KitchenLib-Workshop.dll</HintPath>
+	  </Reference>
+	  <Reference Include="KitchenMode">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\KitchenMode.dll</HintPath>
+	  </Reference>
+	  <Reference Include="KitchenMods">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\KitchenMods.dll</HintPath>
+	  </Reference>
+	  <Reference Include="MessagePack">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\MessagePack.dll</HintPath>
+	  </Reference>
+	  <Reference Include="MessagePack.Annotations">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\MessagePack.Annotations.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Sirenix.Serialization">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Sirenix.Serialization.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Sirenix.Utilities">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Sirenix.Utilities.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.Collections">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Unity.Collections.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.Entities">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Unity.Entities.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AnimationModule">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AssetBundleModule">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.CoreModule">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.PhysicsModule">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UI">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\UnityEngine.UI.dll</HintPath>
+	  </Reference>
+	  <Reference Include="XNode">
+	    <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\XNode.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 	<Target Name="BundleWorkshop" AfterTargets="Build" Condition="$(EnableModDeployLocal) == 'true'">
