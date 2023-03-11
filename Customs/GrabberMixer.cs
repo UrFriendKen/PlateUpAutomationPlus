@@ -14,7 +14,22 @@ namespace KitchenAutomationPlus.Customs
         public override int BaseGameDataObjectID => ApplianceReferences.MixerHeated;
         public override string UniqueNameID => "grabbermixer";
         public override GameObject Prefab => Main.Bundle.LoadAsset<GameObject>("Mixer - Grabber");
-        public override List<IApplianceProperty> Properties { get => ((Appliance)GDOUtils.GetExistingGDO(ApplianceReferences.Mixer)).Properties; protected set => base.Properties = value; }
+        public override List<IApplianceProperty> Properties => new List<IApplianceProperty>
+        {
+            new CItemHolder(),
+            new CApplianceGrabPoint(),
+            new CConveyCooldown()
+            {
+                Total = 0f
+            },
+            new CConveyPushItems()
+            {
+                Delay = 1f,
+                Push = false,
+                Grab = true,
+                GrabSpecificType = false
+            }
+        };
         public override List<Appliance.ApplianceProcesses> Processes { get => ((Appliance)GDOUtils.GetExistingGDO(ApplianceReferences.Mixer)).Processes; protected set => base.Processes = value; }
         public override bool IsNonInteractive => false;
         public override OccupancyLayer Layer => OccupancyLayer.Default;
@@ -77,7 +92,6 @@ namespace KitchenAutomationPlus.Customs
             {
                 ApplyMaterials();
                 ApplyComponents();
-                ApplyProperties();
 
                 isRegistered = true;
             }
@@ -126,25 +140,6 @@ namespace KitchenAutomationPlus.Customs
             materials2[0] = MaterialUtils.GetExistingMaterial("Plastic - Red");
             materials2[1] = MaterialUtils.GetExistingMaterial("Tape");
             MaterialUtils.ApplyMaterial(Prefab, "Blender/Stand", materials2);
-        }
-
-        private void ApplyProperties()
-        {
-            Properties.Add(new CApplianceGrabPoint());
-
-            Properties.Add(
-                new CConveyCooldown()
-                {
-                    Total = 0f
-                });
-            Properties.Add(
-                new CConveyPushItems()
-                {
-                    Delay = 1f,
-                    Push = false,
-                    Grab = true,
-                    GrabSpecificType = false
-                });
         }
 
         private void ApplyComponents()

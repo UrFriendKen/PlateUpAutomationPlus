@@ -2,7 +2,6 @@
 using KitchenAutomationPlus.Customs;
 using KitchenAutomationPlus.Preferences;
 using KitchenAutomationPlus.Systems.PseudoProcess;
-//using KitchenAutomationPlus.Systems.Activation;
 using KitchenData;
 using KitchenLib;
 using KitchenLib.Customs;
@@ -27,7 +26,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.5.3";
+        public const string MOD_VERSION = "1.5.4";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -53,7 +52,6 @@ namespace KitchenAutomationPlus
         public const string GRABBER_MIXER_ENABLED_ID = "grabberMixerEnabled";
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
         public const string CONVEYOR_FAST_ENABLED_ID = "conveyorFastEnabled";
-        //public const string GRABBABLE_BEANS_ENABLED_ID = "grabbableBeansEnabled";
         public const string REFILLED_BROTH_CHANGE_ID = "refilledBrothChange";
         public const string CONVEYORMIXER_CAN_TAKE_FOOD_ID = "conveyorMixerCanTakeFood";
 
