@@ -27,7 +27,8 @@ namespace KitchenAutomationPlus.Customs
                 Delay = 1f,
                 Push = false,
                 Grab = true,
-                GrabSpecificType = false
+                GrabSpecificType = false,
+                IgnoreProcessingItems = true
             }
         };
         public override List<Appliance.ApplianceProcesses> Processes { get => ((Appliance)GDOUtils.GetExistingGDO(ApplianceReferences.Mixer)).Processes; protected set => base.Processes = value; }
