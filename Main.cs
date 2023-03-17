@@ -26,7 +26,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.5.5";
+        public const string MOD_VERSION = "1.6.0";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -44,6 +44,7 @@ namespace KitchenAutomationPlus
 
         public const string GRABBER_ALLOW_ROTATE_DURING_DAY_ID = "grabberAllowRotateDuringDay";
         public const string SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID = "smartGrabberAllowFilterChangeDuringDay";
+        public const string VARIABLE_PROVIDER_ALLOW_SWITCH_DURING_NIGHT_ID = "variableProviderAllowSwitchDuringNight";
         public const string TELEPORTER_ALLOW_UNASSIGN_ID = "teleporterAllowUnassign";
         public const string BIN_GRAB_LEVEL_ID = "binGrabLevel";
         public const string DISHWASHER_AUTO_START_ID = "dishwasherAutoStart";
@@ -391,8 +392,8 @@ namespace KitchenAutomationPlus
             PrefManager.AddSpacer();
             PrefManager.SubmenuDone();
 
-            PrefManager.AddSubmenu("Grabber", "grabber");
-            PrefManager.AddLabel("Grabber Settings");
+            PrefManager.AddSubmenu("Filters/Settings", "filters/settings");
+            PrefManager.AddLabel("Filters/Settings");
             PrefManager.AddSpacer();
             PrefManager.AddLabel("Allow Rotate");
             PrefManager.AddOption<int>(
@@ -408,6 +409,13 @@ namespace KitchenAutomationPlus
                 0,
                 new int[] { 0, 1, 2 },
                 new string[] { "In Practice Mode and Day", "In Practice Mode Only", "Never" });
+            PrefManager.AddLabel("Switch Ice Cream Station");
+            PrefManager.AddOption<bool>(
+                VARIABLE_PROVIDER_ALLOW_SWITCH_DURING_NIGHT_ID,
+                "Switch Ice Cream Station",
+                false,
+                new bool[] { false, true },
+                new string[] { "In Practice Mode and Day", "Anytime" });
             PrefManager.AddSpacer();
             PrefManager.AddSpacer();
             PrefManager.SubmenuDone();
