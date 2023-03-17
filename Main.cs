@@ -26,7 +26,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.5.4";
+        public const string MOD_VERSION = "1.5.5";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -61,11 +61,6 @@ namespace KitchenAutomationPlus
 
         protected override void OnInitialise()
         {
-            foreach (Item item in GameData.Main.Get<Item>())
-            {
-                Main.LogInfo($"{item.name} = {item.ItemStorageFlags}");
-            }
-
             LogWarning($"{MOD_GUID} v{MOD_VERSION} in use!");
             
             try
@@ -197,18 +192,18 @@ namespace KitchenAutomationPlus
                     new int[] { ItemReferences.PlateDirty, ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
                     new int[] { ItemReferences.Plate, ItemReferences.Plate, ItemReferences.Wok });
 
-                int drinksModCupBobaDirty = -1002751344;
-                int drinksModCup = 23353956;
+                int drinksModCupBobaDirty = -551182937;
+                int applianceLibCup = -1951140858;
                 Main.LogInfo("Attempting to add DrinksMod boba cups to dishwasher DynamicProvider");
-                dishWasherDynamicProvider.Add(drinksModCupBobaDirty, drinksModCup);
+                dishWasherDynamicProvider.Add(drinksModCupBobaDirty, applianceLibCup);
 
-                int miniCafeSmallMugDirty = -189783898;
-                int miniCafeSmallMug = 655771011;
+                int miniCafeSmallMugDirty = 213976453;
+                int miniCafeSmallMug = 1721483158;
                 Main.LogInfo("Attempting to add MiniCafe small mugs to dishwasher DynamicProvider");
                 dishWasherDynamicProvider.Add(miniCafeSmallMugDirty, miniCafeSmallMug);
 
-                int miniCafeBigMugDirty = 1622806730;
-                int miniCafeBigMug = 763104287;
+                int miniCafeBigMugDirty = 1527576247;
+                int miniCafeBigMug = -895445170;
                 Main.LogInfo("Attempting to add MiniCafe big mugs to dishwasher DynamicProvider");
                 dishWasherDynamicProvider.Add(miniCafeBigMugDirty, miniCafeBigMug);
 
