@@ -48,6 +48,7 @@ namespace KitchenAutomationPlus
         public const string BIN_GRAB_LEVEL_ID = "binGrabLevel";
         public const string DISHWASHER_AUTO_START_ID = "dishwasherAutoStart";
         public const string MICROWAVE_AUTO_START_ID = "microwaveAutoStart";
+        public const string PORTIONER_DISALLOW_AUTO_SPLIT_MERGE = "portionerDisallowAutoSplitMerge";
         public const string LAZY_MIXER_ENABLED_ID = "lazyMixerEnabled";
         public const string GRABBER_MIXER_ENABLED_ID = "grabberMixerEnabled";
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
@@ -269,7 +270,7 @@ namespace KitchenAutomationPlus
 
             if (PrefManager.Get<int>(CONVEYORMIXER_CAN_TAKE_FOOD_ID) == 1)
             {
-                Main.LogInfo("Updating conveyor mixer prefabl to add CApplianceGrabPoint");
+                Main.LogInfo("Updating conveyor mixer prefab to add CApplianceGrabPoint");
                 var conveyorMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerPusher) as Appliance;
                 if (conveyorMixer != null)
                 {
@@ -371,6 +372,13 @@ namespace KitchenAutomationPlus
                 0,
                 new int[] { 0, 1 },
                 new string[] { "Never", "When Has Item" });
+            PrefManager.AddLabel("Prevent Portioner Combining");
+            PrefManager.AddOption<bool>(
+                PORTIONER_DISALLOW_AUTO_SPLIT_MERGE,
+                "Prevent Portioner Combining",
+                false,
+                new bool[] { false, true },
+                new string[] { "Disabled", "Enabled" });
             PrefManager.AddLabel("Take Food From Conveyor Mixer");
             PrefManager.AddInfo("Only works for newly placed Conveyor Mixers. Requires game restart.");
             PrefManager.AddOption<int>(
