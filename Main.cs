@@ -14,7 +14,7 @@ using System.Linq;
 using System.Reflection;
 using Unity.Entities;
 using UnityEngine;
-using PreferenceSystem;
+using System.Collections.Generic;
 
 // Namespace should have "Kitchen" in the beginning
 namespace KitchenAutomationPlus
@@ -54,6 +54,8 @@ namespace KitchenAutomationPlus
         public const string GRABBER_MIXER_ENABLED_ID = "grabberMixerEnabled";
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
         public const string CONVEYOR_FAST_ENABLED_ID = "conveyorFastEnabled";
+        public const string GRABBER_MERGING_ENABLED_ID = "grabberMergingEnabled";
+        public const string GRABBER_DISTRIBUTING_ENABLED_ID = "grabberDistributingEnabled";
         public const string REFILLED_BROTH_CHANGE_ID = "refilledBrothChange";
         public const string CONVEYORMIXER_CAN_TAKE_FOOD_ID = "conveyorMixerCanTakeFood";
 
@@ -79,49 +81,62 @@ namespace KitchenAutomationPlus
 
         private void UpdateUpgrades()
         {
+            List<Appliance> customGrabbers = new List<Appliance>();
             Appliance smartRotatingGrabber = GetModdedGDO<Appliance, SmartRotatingGrabber>();
-            if (smartRotatingGrabber != null)
+            if (smartRotatingGrabber != null && PrefManager.Get<bool>(SMART_GRABBER_ROTATING_ENABLED_ID))
+                customGrabbers.Add(smartRotatingGrabber);
+
+            Appliance rotatingGrabberMerger = GetModdedGDO<Appliance, RotatingGrabberMerger>();
+            if (rotatingGrabberMerger != null && PrefManager.Get<bool>(GRABBER_MERGING_ENABLED_ID))
+                customGrabbers.Add(rotatingGrabberMerger);
+
+            Appliance rotatingGrabberDistributor = GetModdedGDO<Appliance, RotatingGrabberDistributor>();
+            if (rotatingGrabberDistributor != null && PrefManager.Get<bool>(GRABBER_DISTRIBUTING_ENABLED_ID))
+                customGrabbers.Add(rotatingGrabberDistributor);
+
+            Appliance conveyorFast = GetModdedGDO<Appliance, ConveyorFast>();
+            if (customGrabbers.Count > 0)
             {
-                if (PrefManager.Get<bool>(SMART_GRABBER_ROTATING_ENABLED_ID))
+                Appliance grabber = GDOUtils.GetExistingGDO(ApplianceReferences.Grabber) as Appliance;
+                Appliance rotatingGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberRotatable) as Appliance;
+                Appliance smartGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberSmart) as Appliance;
+                if (grabber != null && smartRotatingGrabber != null && smartGrabber != null && rotatingGrabber != null)
                 {
-                    Appliance grabber = GDOUtils.GetExistingGDO(ApplianceReferences.Grabber) as Appliance;
-                    Appliance rotatingGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberRotatable) as Appliance;
-                    Appliance smartGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberSmart) as Appliance;
-                    if (grabber != null && smartRotatingGrabber != null && smartGrabber != null && rotatingGrabber != null)
+                    for (int i = 0; i < customGrabbers.Count; i++)
                     {
-                        grabber.Upgrades.Add(smartRotatingGrabber);
-                        smartGrabber.Upgrades.Add(smartRotatingGrabber);
-                        smartGrabber.Upgrades.Remove(rotatingGrabber);
+                        grabber.Upgrades.Add(customGrabbers[i]);
+                        if (conveyorFast != null)
+                        {
+                            conveyorFast.Upgrades.Add(customGrabbers[i]);
+                        }
+                        if (i < customGrabbers.Count - 1)
+                        {
+                            customGrabbers[i].Upgrades.Remove(rotatingGrabber);
+                            customGrabbers[i].Upgrades.Add(customGrabbers[i + 1]);
+                        }
+                        if (i == 0)
+                        {
+                            smartGrabber.Upgrades.Add(customGrabbers[i]);
+                            smartGrabber.Upgrades.Remove(rotatingGrabber);
+                        }
                     }
-                }
-                else
-                {
-                    smartRotatingGrabber.IsPurchasable = false;
-                    smartRotatingGrabber.IsPurchasableAsUpgrade = false;
                 }
             }
 
-
-            Appliance conveyorfast = GetModdedGDO<Appliance, ConveyorFast>();
-            if (conveyorfast != null)
+            if (conveyorFast != null)
             {
                 if (PrefManager.Get<bool>(CONVEYOR_FAST_ENABLED_ID))
                 {
                     Appliance conveyor = GDOUtils.GetExistingGDO(ApplianceReferences.Belt) as Appliance;
                     if (conveyor != null)
                     {
-                        conveyor.Upgrades.Add(conveyorfast);
-                    }
-
-                    if (smartRotatingGrabber != null && PrefManager.Get<bool>(SMART_GRABBER_ROTATING_ENABLED_ID))
-                    {
-                        conveyorfast.Upgrades.Add(smartRotatingGrabber);
+                        conveyor.Upgrades.Add(conveyorFast);
                     }
                 }
                 else
                 {
-                    conveyorfast.IsPurchasable = false;
-                    conveyorfast.IsPurchasableAsUpgrade = false;
+                    conveyorFast.IsPurchasable = false;
+                    conveyorFast.IsPurchasableAsUpgrade = false;
                 }
             }
 
@@ -218,8 +233,8 @@ namespace KitchenAutomationPlus
                         float baseDuration = ((CTakesDuration)dishWasher.Properties[i]).Total;
                         dishWasher.Properties.Add(new CPseudoProcessDuration(
                             baseDuration,
-                            new int[] { ItemReferences.PlateDirty, ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
-                            new float[] { baseDuration * 1.5f, baseDuration * 1.5f, baseDuration * 2f }));
+                            new int[] { ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
+                            new float[] { baseDuration * 1.5f, baseDuration * 2f }));
                     }
                 }
             }
@@ -315,6 +330,18 @@ namespace KitchenAutomationPlus
                     .AddLabel("Conveyor - Fast")
                     .AddOption<bool>(
                         CONVEYOR_FAST_ENABLED_ID,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "Disabled", "Enabled" })
+                    .AddLabel("Grabber - Merging")
+                    .AddOption<bool>(
+                        GRABBER_MERGING_ENABLED_ID,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "Disabled", "Enabled" })
+                    .AddLabel("Grabber - Distributing")
+                    .AddOption<bool>(
+                        GRABBER_DISTRIBUTING_ENABLED_ID,
                         false,
                         new bool[] { false, true },
                         new string[] { "Disabled", "Enabled" })

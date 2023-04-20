@@ -49,7 +49,8 @@ namespace KitchenAutomationPlus
                     state = push2.State;
                 CConveyPushItems.ConveyState resetState = autoRotate.AfterGrab ? CConveyPushItems.ConveyState.Grab : CConveyPushItems.ConveyState.Push;
 
-                if (state == resetState)
+                Vector3 vector = pos.Rotation.RotateOrientation(rotate.Target).ToOffset();
+                if (state == resetState || !IsValidTarget(pos, pos + vector))
                 {
                     autoRotate.Primed = true;
                 }
@@ -63,7 +64,7 @@ namespace KitchenAutomationPlus
                     }
                     Set(entity, rotate);
 
-                    Vector3 vector = pos.Rotation.RotateOrientation(rotate.Target).ToOffset();
+                    vector = pos.Rotation.RotateOrientation(rotate.Target).ToOffset();
                     if (IsValidTarget(pos, pos + vector))
                     {
                         autoRotate.Primed = false;

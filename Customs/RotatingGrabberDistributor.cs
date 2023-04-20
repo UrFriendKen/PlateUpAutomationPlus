@@ -48,7 +48,7 @@ namespace KitchenAutomationPlus.Customs
         public override bool IsNonInteractive => false;
         public override OccupancyLayer Layer => OccupancyLayer.Default;
         public override bool IsPurchasable => false;
-        public override bool IsPurchasableAsUpgrade => true;
+        public override bool IsPurchasableAsUpgrade => false;
         public override DecorationType ThemeRequired => DecorationType.Null;
         public override ShoppingTags ShoppingTags => ShoppingTags.Automation;
         public override RarityTier RarityTier => RarityTier.Rare;
@@ -64,7 +64,7 @@ namespace KitchenAutomationPlus.Customs
             (Locale.English, new ApplianceInfo()
             {
                 Name = "Grabber - Distributing",
-                Description = "Automatically takes items. Interact during the day to change output direction"
+                Description = "Automatically takes items. Rotates after pushing an item."
             })
         };
 
