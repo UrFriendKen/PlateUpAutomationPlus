@@ -1,6 +1,5 @@
 ﻿using Kitchen;
 using KitchenAutomationPlus.Customs;
-using KitchenAutomationPlus.Preferences;
 using KitchenAutomationPlus.Systems.PseudoProcess;
 using KitchenData;
 using KitchenLib;
@@ -9,12 +8,13 @@ using KitchenLib.Event;
 using KitchenLib.References;
 using KitchenLib.Utils;
 using KitchenMods;
+using PreferenceSystem;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Unity.Entities;
 using UnityEngine;
+using PreferenceSystem;
 
 // Namespace should have "Kitchen" in the beginning
 namespace KitchenAutomationPlus
@@ -26,7 +26,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.6.0";
+        public const string MOD_VERSION = "1.6.1";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -57,7 +57,7 @@ namespace KitchenAutomationPlus
         public const string REFILLED_BROTH_CHANGE_ID = "refilledBrothChange";
         public const string CONVEYORMIXER_CAN_TAKE_FOOD_ID = "conveyorMixerCanTakeFood";
 
-        internal static PreferencesManager PrefManager;
+        internal static PreferenceSystemManager PrefManager;
 
         public Main() : base(MOD_GUID, MOD_NAME, MOD_AUTHOR, MOD_VERSION, MOD_GAMEVERSION, Assembly.GetExecutingAssembly()) { }
 
@@ -218,8 +218,8 @@ namespace KitchenAutomationPlus
                         float baseDuration = ((CTakesDuration)dishWasher.Properties[i]).Total;
                         dishWasher.Properties.Add(new CPseudoProcessDuration(
                             baseDuration,
-                            new int[] { ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
-                            new float[] { baseDuration * 1.5f, baseDuration * 2f }));
+                            new int[] { ItemReferences.PlateDirty, ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
+                            new float[] { baseDuration * 1.5f, baseDuration * 1.5f, baseDuration * 2f }));
                     }
                 }
             }
@@ -233,6 +233,8 @@ namespace KitchenAutomationPlus
             AddGameDataObject<LazyMixer>();
             AddGameDataObject<ConveyorFast>();
             AddGameDataObject<GrabberMixer>();
+            AddGameDataObject<RotatingGrabberMerger>();
+            AddGameDataObject<RotatingGrabberDistributor>();
 
             LogInfo("Done loading game data.");
         }
@@ -243,32 +245,6 @@ namespace KitchenAutomationPlus
 
         private void UpdateAppliances()
         {
-            Main.LogInfo("Updating Beans to be grabbable (Grabbable Beans - QuackAndCheese)");
-            // Bean Provider
-            var beanProvider = GDOUtils.GetExistingGDO(ApplianceReferences.SourceBeans) as Appliance;
-
-            var beanItem = GDOUtils.GetExistingGDO(ItemReferences.BeansIngredient) as Item;
-
-            beanProvider.Properties = new List<IApplianceProperty>()
-            {
-                KitchenPropertiesUtils.GetUnlimitedCItemProvider(beanItem.ID)
-            };
-
-            beanItem.Prefab = Bundle.LoadAsset<GameObject>("Canned_Bean");
-
-            MaterialUtils.ApplyMaterial<MeshRenderer>(beanItem.Prefab, "CanBeans", new Material[] {
-                MaterialUtils.GetExistingMaterial("Bean")
-            });
-            MaterialUtils.ApplyMaterial<MeshRenderer>(beanItem.Prefab, "CanBeanJuice", new Material[] {
-                MaterialUtils.GetExistingMaterial("Bean - Juice")
-            });
-            MaterialUtils.ApplyMaterial<MeshRenderer>(beanItem.Prefab, "Can", new Material[] {
-                MaterialUtils.GetExistingMaterial("Metal Very Dark")
-            });
-
-
-
-
             if (PrefManager.Get<int>(CONVEYORMIXER_CAN_TAKE_FOOD_ID) == 1)
             {
                 Main.LogInfo("Updating conveyor mixer prefab to add CApplianceGrabPoint");
@@ -297,7 +273,7 @@ namespace KitchenAutomationPlus
             // Register custom GDOs
             AddGameData();
 
-            PrefManager = new PreferencesManager(MOD_GUID, MOD_NAME);
+            PrefManager = new PreferenceSystemManager(MOD_GUID, MOD_NAME);
             CreatePreferences();
 
             // Perform actions when game data is built
@@ -310,149 +286,130 @@ namespace KitchenAutomationPlus
 
         private void CreatePreferences()
         {
-            PrefManager.AddLabel("Automation Plus");
-            PrefManager.AddInfo("Changing \"Custom Appliances\" only takes effect upon game restart.");
-            PrefManager.AddSpacer();
+            PrefManager
+                .AddLabel("Automation Plus")
+                .AddInfo("Changing \"Custom Appliances\" only takes effect upon game restart.")
+                .AddSpacer()
+                .AddSubmenu("Custom Appliances", "Custom Appliances")
+                    .AddLabel("Custom Appliance Settings")
+                    .AddInfo("Disabling prevents Custom Apppliances from showing up. Changed settings only takes effect upon game restart.")
+                    .AddSpacer()
+                    .AddLabel("Lazy Mixer")
+                    .AddOption<bool>(
+                        LAZY_MIXER_ENABLED_ID,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "Disabled", "Enabled" })
+                    .AddLabel("Grabber Mixer")
+                    .AddOption<bool>(
+                        GRABBER_MIXER_ENABLED_ID,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "Disabled", "Enabled" })
+                    .AddLabel("Smart Grabber - Rotating")
+                    .AddOption<bool>(
+                        SMART_GRABBER_ROTATING_ENABLED_ID,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "Disabled", "Enabled" })
+                    .AddLabel("Conveyor - Fast")
+                    .AddOption<bool>(
+                        CONVEYOR_FAST_ENABLED_ID,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "Disabled", "Enabled" })
+                    .AddSpacer()
+                    .AddSpacer()
+                .SubmenuDone()
+                .AddSubmenu("Modified Appliances", "Modified Appliances")
+                    .AddLabel("Modified Appliances Settings")
+                    .AddLabel("Auto Grab Trash Bag When")
+                    .AddOption<int>(
+                        BIN_GRAB_LEVEL_ID,
+                        0,
+                        new int[] { 0, 1 },
+                        new string[] { "Not Empty", "Full" })
+                    .AddLabel("Auto Start Dishwasher")
+                    .AddOption<int>(
+                        DISHWASHER_AUTO_START_ID,
+                        0,
+                        new int[] { 0, 1 },
+                        new string[] { "Never", "When Full" })
+                    .AddLabel("Auto Start Microwave")
+                    .AddOption<int>(
+                        MICROWAVE_AUTO_START_ID,
+                        0,
+                        new int[] { 0, 1 },
+                        new string[] { "Never", "When Has Item" })
+                    .AddLabel("Prevent Portioner Combining")
+                    .AddOption<bool>(
+                        PORTIONER_DISALLOW_AUTO_SPLIT_MERGE,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "Disabled", "Enabled" })
+                    .AddLabel("Take Food From Conveyor Mixer")
+                    .AddInfo("Only works for newly placed Conveyor Mixers. Requires game restart.")
+                    .AddOption<int>(
+                        CONVEYORMIXER_CAN_TAKE_FOOD_ID,
+                        0,
+                        new int[] { 0, 1 },
+                        new string[] { "Disabled", "Enabled" })
+                    .AddSpacer()
+                    .AddSpacer()
+                .SubmenuDone()
+                .AddSubmenu("Filters/Settings", "filters/settings")
+                    .AddLabel("Filters/Settings")
+                    .AddSpacer()
+                    .AddLabel("Allow Rotate")
+                    .AddOption<int>(
+                        GRABBER_ALLOW_ROTATE_DURING_DAY_ID,
+                        0,
+                        new int[] { -1, 0, 1, 2 },
+                        new string[] { "Anytime", "In Practice Mode and Day", "In Practice Mode Only", "In Practice Mode and Prep" })
+                    .AddLabel("Allow Filter Change")
+                    .AddOption<int>(
+                        SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID,
+                        0,
+                        new int[] { 0, 1, 2 },
+                        new string[] { "In Practice Mode and Day", "In Practice Mode Only", "Never" })
+                    .AddLabel("Switch Ice Cream Station")
+                    .AddOption<bool>(
+                        VARIABLE_PROVIDER_ALLOW_SWITCH_DURING_NIGHT_ID,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "In Practice Mode and Day", "Anytime" })
+                    .AddSpacer()
+                    .AddSpacer()
+                .SubmenuDone()
+                .AddSubmenu("Teleporter", "teleporter")
+                    .AddLabel("Teleporter Settings")
+                    .AddSpacer()
+                    .AddLabel("Allow Unassign Teleporter")
+                    .AddOption<int>(
+                        TELEPORTER_ALLOW_UNASSIGN_ID,
+                        0,
+                        new int[] { -1, 0, 1, 2 },
+                        new string[] { "Never", "Anytime", "In Practice Mode Only", "In Practice Mode and Prep" })
+                    .AddSpacer()
+                    .AddSpacer()
+                    .SubmenuDone()
+                .AddSubmenu("Items", "items")
+                    .AddLabel("Item Settings")
+                    .AddSpacer()
+                    .AddLabel("Refilled Broth")
+                    .AddOption<int>(
+                        REFILLED_BROTH_CHANGE_ID,
+                        0,
+                        new int[] { 0, 1 },
+                        new string[] { "Remains Unchanged", "Turns Into Regular Broth" })
+                    .AddSpacer()
+                    .AddSpacer()
+                .SubmenuDone()
+                .AddSpacer()
+                .AddSpacer();
 
-            PrefManager.AddSubmenu("Custom Appliances", "Custom Appliances");
-            PrefManager.AddLabel("Custom Appliance Settings");
-            PrefManager.AddInfo("Disabling prevents Custom Apppliances from showing up. Changed settings only takes effect upon game restart.");
-            PrefManager.AddSpacer();
-            PrefManager.AddLabel("Lazy Mixer");
-            PrefManager.AddOption<bool>(
-                LAZY_MIXER_ENABLED_ID,
-                "Lazy Mixer",
-                false,
-                new bool[] { false, true },
-                new string[] { "Disabled", "Enabled" });
-            PrefManager.AddLabel("Grabber Mixer");
-            PrefManager.AddOption<bool>(
-                GRABBER_MIXER_ENABLED_ID,
-                "Grabber Mixer",
-                false,
-                new bool[] { false, true },
-                new string[] { "Disabled", "Enabled" });
-            PrefManager.AddLabel("Smart Grabber - Rotating");
-            PrefManager.AddOption<bool>(
-                SMART_GRABBER_ROTATING_ENABLED_ID,
-                "Smart Grabber - Rotating",
-                false,
-                new bool[] { false, true },
-                new string[] { "Disabled", "Enabled" });
-            PrefManager.AddLabel("Conveyor - Fast");
-            PrefManager.AddOption<bool>(
-                CONVEYOR_FAST_ENABLED_ID,
-                "Conveyor - Fast",
-                false,
-                new bool[] { false, true },
-                new string[] { "Disabled", "Enabled" });
-            PrefManager.AddSpacer();
-            PrefManager.AddSpacer();
-            PrefManager.SubmenuDone();
-
-            PrefManager.AddSubmenu("Modified Appliances", "Modified Appliances");
-            PrefManager.AddLabel("Modified Appliances Settings");
-            PrefManager.AddLabel("Auto Grab Trash Bag When");
-            PrefManager.AddOption<int>(
-                BIN_GRAB_LEVEL_ID,
-                "Grab Trash Bag When",
-                0,
-                new int[] { 0, 1 },
-                new string[] { "Not Empty", "Full" });
-            PrefManager.AddLabel("Auto Start Dishwasher");
-            PrefManager.AddOption<int>(
-                DISHWASHER_AUTO_START_ID,
-                "Auto Start Dishwasher",
-                0,
-                new int[] { 0, 1 },
-                new string[] { "Never", "When Full" });
-            PrefManager.AddLabel("Auto Start Microwave");
-            PrefManager.AddOption<int>(
-                MICROWAVE_AUTO_START_ID,
-                "Auto Start Microwave",
-                0,
-                new int[] { 0, 1 },
-                new string[] { "Never", "When Has Item" });
-            PrefManager.AddLabel("Prevent Portioner Combining");
-            PrefManager.AddOption<bool>(
-                PORTIONER_DISALLOW_AUTO_SPLIT_MERGE,
-                "Prevent Portioner Combining",
-                false,
-                new bool[] { false, true },
-                new string[] { "Disabled", "Enabled" });
-            PrefManager.AddLabel("Take Food From Conveyor Mixer");
-            PrefManager.AddInfo("Only works for newly placed Conveyor Mixers. Requires game restart.");
-            PrefManager.AddOption<int>(
-                CONVEYORMIXER_CAN_TAKE_FOOD_ID,
-                "Take Food From Conveyor Mixer",
-                0,
-                new int[] { 0, 1 },
-                new string[] { "Disabled", "Enabled" });
-            PrefManager.AddSpacer();
-            PrefManager.AddSpacer();
-            PrefManager.SubmenuDone();
-
-            PrefManager.AddSubmenu("Filters/Settings", "filters/settings");
-            PrefManager.AddLabel("Filters/Settings");
-            PrefManager.AddSpacer();
-            PrefManager.AddLabel("Allow Rotate");
-            PrefManager.AddOption<int>(
-                GRABBER_ALLOW_ROTATE_DURING_DAY_ID,
-                "Allow Rotate",
-                0,
-                new int[]{ -1, 0, 1, 2 },
-                new string[] { "Anytime", "In Practice Mode and Day", "In Practice Mode Only", "In Practice Mode and Prep" });
-            PrefManager.AddLabel("Allow Filter Change");
-            PrefManager.AddOption<int>(
-                SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID,
-                "Allow Filter Change",
-                0,
-                new int[] { 0, 1, 2 },
-                new string[] { "In Practice Mode and Day", "In Practice Mode Only", "Never" });
-            PrefManager.AddLabel("Switch Ice Cream Station");
-            PrefManager.AddOption<bool>(
-                VARIABLE_PROVIDER_ALLOW_SWITCH_DURING_NIGHT_ID,
-                "Switch Ice Cream Station",
-                false,
-                new bool[] { false, true },
-                new string[] { "In Practice Mode and Day", "Anytime" });
-            PrefManager.AddSpacer();
-            PrefManager.AddSpacer();
-            PrefManager.SubmenuDone();
-
-            PrefManager.AddSubmenu("Teleporter", "teleporter");
-            PrefManager.AddLabel("Teleporter Settings");
-            PrefManager.AddSpacer();
-            PrefManager.AddLabel("Allow Unassign Teleporter");
-            PrefManager.AddOption<int>(
-                TELEPORTER_ALLOW_UNASSIGN_ID,
-                "Allow Unassign Teleporter",
-                0,
-                new int[] { -1, 0, 1, 2 },
-                new string[] { "Never", "Anytime", "In Practice Mode Only", "In Practice Mode and Prep" });
-            PrefManager.AddSpacer();
-            PrefManager.AddSpacer();
-            PrefManager.SubmenuDone();
-
-            PrefManager.AddSubmenu("Items", "items");
-            PrefManager.AddLabel("Item Settings");
-            PrefManager.AddSpacer();
-            PrefManager.AddLabel("Refilled Broth");
-            PrefManager.AddOption<int>(
-                REFILLED_BROTH_CHANGE_ID,
-                "Refilled Broth",
-                0,
-                new int[] { 0, 1 },
-                new string[] { "Remains Unchanged", "Turns Into Regular Broth" });
-            PrefManager.AddSpacer();
-            PrefManager.AddSpacer();
-            PrefManager.SubmenuDone();
-
-            PrefManager.AddSpacer();
-            PrefManager.AddSpacer();
-
-            PrefManager.RegisterMenu(PreferencesManager.MenuType.MainMenu);
-            PrefManager.RegisterMenu(PreferencesManager.MenuType.PauseMenu);
+            PrefManager.RegisterMenu(PreferenceSystemManager.MenuType.MainMenu);
+            PrefManager.RegisterMenu(PreferenceSystemManager.MenuType.PauseMenu);
         }
 
         private static T1 GetModdedGDO<T1, T2>() where T1 : GameDataObject

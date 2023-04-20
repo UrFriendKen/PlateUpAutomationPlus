@@ -85,7 +85,7 @@ namespace KitchenAutomationPlus.Customs
 
         static FieldInfo pushObject = ReflectionUtils.GetField<ConveyItemsView>("PushObject", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        public override void OnRegister(GameDataObject gameDataObject)
+        public override void OnRegister(Appliance gameDataObject)
         {
             base.OnRegister(gameDataObject);
 
