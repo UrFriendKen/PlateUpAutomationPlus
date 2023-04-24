@@ -30,24 +30,33 @@ namespace KitchenAutomationPlus
         public CConveyPushItems.ConveyState State;
     }
 
-
-    [UpdateBefore(typeof(TeleportItems))]
-    [UpdateBefore(typeof(GrabItems))]
-    [UpdateBefore(typeof(InteractionGroup))]
+    // Why does this break AutoMop???
+    //[UpdateBefore(typeof(InteractionGroup))]
     [UpdateAfter(typeof(GroupReceiveDrink))]
     [UpdateAfter(typeof(GroupReceiveItem))]
     [UpdateAfter(typeof(GroupReceiveBonus))]
     [UpdateAfter(typeof(ApplyItemProcesses))]
-    public class GrabItemsAutoRotate : GameSystemBase
+    public class GrabItemsReversible : GameSystemBase
     {
         EntityQuery _grabberQuery;
-
+        static GrabItemsReversible Instance;
         protected override void Initialise()
         {
             base.Initialise();
             _grabberQuery = GetEntityQuery(new QueryHelper()
             .All(typeof(CConveyCooldown), typeof(CConveyPushItemsReversible), typeof(CItemHolder), typeof(CPosition))
             .None(typeof(CDisableAutomation)));
+            Instance = this;
+        }
+
+        public static bool RequireCConveyPushItemsReversible(Entity entity, out CConveyPushItemsReversible cConveyPushItemsReversible)
+        {
+            cConveyPushItemsReversible = default;
+            if (Instance == null)
+            {
+                return false;
+            }
+            return Instance.Require(entity, out cConveyPushItemsReversible);
         }
 
         protected override void OnUpdate()
@@ -59,7 +68,7 @@ namespace KitchenAutomationPlus
             using NativeArray<CPosition> positions = _grabberQuery.ToComponentDataArray<CPosition>(Allocator.Temp);
 
             EntityContext ctx = new EntityContext(EntityManager);
-            
+
             float speed = HasStatus(RestaurantStatus.HalloweenTrickSlowConveyors) ? 0.5f : 1f;
             float dt = Time.DeltaTime;
 
@@ -74,8 +83,9 @@ namespace KitchenAutomationPlus
 
                 if (!grab.Grab || grab.State == CConveyPushItems.ConveyState.Push || cooldown.Remaining > 0f)
                 {
-                    return;
+                    continue;
                 }
+
                 if (Require(held.HeldItem, out CItem comp))
                 {
                     if (grab.State == CConveyPushItems.ConveyState.Grab)
@@ -119,17 +129,26 @@ namespace KitchenAutomationPlus
                 Vector3 grabFromVector = pos.Rotation.RotateOrientation(grabFrom).ToOffset();
 
                 Entity occupant = GetOccupant(grabFromVector + pos);
-                if (CanReach(pos, grabFromVector + pos) && !Has<CPreventItemTransfer>(occupant) && (!Require(occupant, out CConveyPushItemsReversible comp2) || comp2.State == CConveyPushItems.ConveyState.None))
+                if (CanReach(pos, grabFromVector + pos) && !Has<CPreventItemTransfer>(occupant))
                 {
-                    if (!AttemptGrabHolder(occupant, ctx, entity, ref grab))
+                    CConveyPushItems.ConveyState occupantConveyState = CConveyPushItems.ConveyState.None;
+                    if (Require(occupant, out CConveyPushItemsReversible cPushReversible))
+                        occupantConveyState = cPushReversible.State;
+                    else if (Require(occupant, out CConveyPushItems cPush))
+                        occupantConveyState = cPush.State;
+
+                    if (occupantConveyState == CConveyPushItems.ConveyState.None)
                     {
-                        AttemptGrabFromProvider(occupant, ctx, entity, ref grab);
+                        if (!AttemptGrabHolder(occupant, ctx, entity, ref grab))
+                        {
+                            AttemptGrabFromProvider(occupant, ctx, entity, ref grab);
+                        }
                     }
                 }
                 ctx.Set(entity, grab);
             }
         }
-            
+
         private bool AttemptGrabHolder(Entity target, EntityContext ctx, Entity e, ref CConveyPushItemsReversible grab)
         {
             if (!Require(target, out CItemHolder comp))

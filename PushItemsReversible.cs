@@ -6,11 +6,10 @@ using UnityEngine;
 
 namespace KitchenAutomationPlus
 {
-    [UpdateBefore(typeof(InteractionGroup))]
+    // Why does this break AutoMop???
+    //[UpdateBefore(typeof(InteractionGroup))]
     [UpdateAfter(typeof(ApplyItemProcesses))]
-    [UpdateAfter(typeof(GrabItemsAutoRotate))]
-    [UpdateAfter(typeof(TeleportItems))]
-    public class PushItemsAutoRotate : GameSystemBase
+    public class PushItemsReversible : GameSystemBase
     {
         EntityQuery _grabberQuery;
 
@@ -31,7 +30,7 @@ namespace KitchenAutomationPlus
             using NativeArray<CPosition> positions = _grabberQuery.ToComponentDataArray<CPosition>(Allocator.Temp);
 
             EntityContext ctx = new EntityContext(EntityManager);
-            
+
             float speed = HasStatus(RestaurantStatus.HalloweenTrickSlowConveyors) ? 0.5f : 1f;
             float dt = Time.DeltaTime;
 
@@ -51,6 +50,7 @@ namespace KitchenAutomationPlus
                 {
                     push.State = CConveyPushItems.ConveyState.None;
                     push.Progress = 0f;
+                    Set(entity, push);
                     continue;
                 }
                 bool hasPerformed = false;
@@ -70,12 +70,12 @@ namespace KitchenAutomationPlus
                 Vector3 vector = pos.Rotation.RotateOrientation(pushTo).ToOffset();
                 Entity occupant = GetOccupant(vector + pos);
                 if (push.IgnoreProcessingItems && Require(held.HeldItem, out CItemUndergoingProcess component) && !component.IsBad)
-			    {
+                {
                     isPushing = false;
                 }
 
                 else if (CanReach(pos, vector + pos) && !Has<CPreventItemTransfer>(occupant))
-			    {
+                {
                     if (!hasPerformed && ctx.Require<CItemHolder>(occupant, out var comp2))
                     {
                         bool canPush = false;
@@ -107,7 +107,7 @@ namespace KitchenAutomationPlus
                     if (!hasPerformed && Require(occupant, out CItemProvider cItemProvider))
                     {
                         if (!Data.TryGet(cItem, out Item output, warn_if_fail: true))
-					    {
+                        {
                             continue;
                         }
                         bool isDynamicItemProvider = Require(occupant, out CDynamicItemProvider cDynamicItemProvider);
@@ -195,65 +195,6 @@ namespace KitchenAutomationPlus
                 ctx.Set(entity, push);
                 ctx.Set(entity, cooldown);
             }
-        }
-            
-        private bool AttemptGrabHolder(Entity target, EntityContext ctx, Entity e, ref CConveyPushItemsReversible grab)
-        {
-            if (!Require(target, out CItemHolder comp))
-            {
-                return false;
-            }
-            if (comp.HeldItem == default(Entity))
-            {
-                return false;
-            }
-            if (Has<CPreventItemTransfer>(target))
-            {
-                return false;
-            }
-            if (grab.IgnoreProcessingItems && base.EntityManager.RequireComponent<CItemUndergoingProcess>(comp.HeldItem, out var component) && !component.IsBad)
-            {
-                return false;
-            }
-            if (grab.GrabSpecificType && grab.SpecificType != 0 && base.EntityManager.RequireComponent<CItem>(comp.HeldItem, out var component2) && (component2.ID != grab.SpecificType || !component2.Items.IsEquivalent(grab.SpecificComponents)))
-            {
-                return false;
-            }
-            ctx.UpdateHolder(comp.HeldItem, e);
-            ctx.Remove<CItemUndergoingProcess>(comp.HeldItem);
-            grab.Progress = 0f;
-            grab.State = CConveyPushItems.ConveyState.Grab;
-            return true;
-        }
-
-        private bool AttemptGrabFromProvider(Entity target, EntityContext ctx, Entity e, ref CConveyPushItemsReversible grab)
-        {
-            if (!Require<CItemProvider>(target, out CItemProvider comp))
-            {
-                return false;
-            }
-            if (comp.DirectInsertionOnly)
-            {
-                return false;
-            }
-            if (comp.Available == 0 && comp.Maximum != 0)
-            {
-                return false;
-            }
-            if (grab.GrabSpecificType && grab.SpecificType != 0 && (comp.ProvidedItem != grab.SpecificType || !comp.ProvidedComponents.IsEquivalent(grab.SpecificComponents)))
-            {
-                return false;
-            }
-            if (comp.Maximum > 0)
-            {
-                comp.Available--;
-                ctx.Set(target, comp);
-            }
-            Entity held_item = ctx.CreateItemGroup(comp.ProvidedItem, comp.ProvidedComponents);
-            ctx.UpdateHolder(held_item, e);
-            grab.Progress = 0f;
-            grab.State = CConveyPushItems.ConveyState.Grab;
-            return true;
         }
     }
 }

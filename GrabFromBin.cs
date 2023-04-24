@@ -2,10 +2,12 @@
 using KitchenData;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 namespace KitchenAutomationPlus
 {
     [UpdateAfter(typeof(GrabItems))]
+    [UpdateAfter(typeof(GrabItemsReversible))]
     public class GrabFromBin : GameSystemBase
     {
         EntityQuery ConveyorsQuery;
@@ -15,9 +17,9 @@ namespace KitchenAutomationPlus
             base.Initialise();
             ConveyorsQuery = GetEntityQuery(new QueryHelper()
                 .All(typeof(CConveyCooldown),
-                     typeof(CConveyPushItems),
                      typeof(CItemHolder),
                      typeof(CPosition))
+                .Any(typeof(CConveyPushItems), typeof(CConveyPushItemsReversible))
                 .None(typeof(CDisableAutomation)));
         }
 
@@ -28,7 +30,24 @@ namespace KitchenAutomationPlus
             float dt = Time.DeltaTime;
             foreach (Entity entity in Conveyors)
             {
-                if (!Require(entity, out CConveyPushItems grab) || !grab.Grab || grab.State == CConveyPushItems.ConveyState.Push)
+                bool isGrab = false;
+                CConveyPushItems.ConveyState state = CConveyPushItems.ConveyState.None;
+                bool reversed = false;
+                bool isReversiblePush = false;
+                if (Require(entity, out CConveyPushItems grab))
+                {
+                    isGrab = grab.Grab;
+                    state = grab.State;
+                }
+                if (Require(entity, out CConveyPushItemsReversible grabReversible))
+                {
+                    isReversiblePush = true;
+                    isGrab = grabReversible.Grab;
+                    state = grabReversible.State;
+                    reversed = grabReversible.Reversed;
+                }
+
+                if (!isGrab || state == CConveyPushItems.ConveyState.Push)
                 {
                     continue;
                 }
@@ -42,7 +61,18 @@ namespace KitchenAutomationPlus
                 }
                 if (Require(entity, out CPosition pos))
                 {
-                    Entity occupant = GetOccupant(pos.Forward(-1f) + pos);
+                    Orientation grabFrom = Orientation.Up;
+                    if (!reversed)
+                    {
+                        grabFrom = Orientation.Down;
+                    }
+                    else if (Require(entity, out CConveyPushRotatable rotate))
+                    {
+                        grabFrom = rotate.Target;
+                    }
+
+                    Vector3 vector = pos.Rotation.RotateOrientation(grabFrom).ToOffset();
+                    Entity occupant = GetOccupant(pos + vector);
                     if (!Require(occupant, out CApplianceBin bin))
                     {
                         continue;
@@ -51,7 +81,7 @@ namespace KitchenAutomationPlus
                     {
                         continue;
                     }
-                    if (!CanReach(pos, pos.Forward(-1f) + pos) || HasComponent<CPreventItemTransfer>(occupant) || bin.SelfEmptyTime > 0)
+                    if (!CanReach(pos, pos + vector) || HasComponent<CPreventItemTransfer>(occupant) || bin.SelfEmptyTime > 0)
                     {
                         continue;
                     }
@@ -63,9 +93,18 @@ namespace KitchenAutomationPlus
                             ID = bin.EmptyBinItem,
                             Holder = entity
                         });
-                        grab.Progress = 0f;
-                        grab.State = CConveyPushItems.ConveyState.Grab;
-                        Set(entity, grab);
+                        if (!isReversiblePush)
+                        {
+                            grab.Progress = 0f;
+                            grab.State = CConveyPushItems.ConveyState.Grab;
+                            Set(entity, grab);
+                        }
+                        else
+                        {
+                            grabReversible.Progress = 0f;
+                            grabReversible.State = CConveyPushItems.ConveyState.Grab;
+                            Set(entity, grabReversible);
+                        }
                         bin.CurrentAmount = 0;
                         Set(occupant, bin);
                     }

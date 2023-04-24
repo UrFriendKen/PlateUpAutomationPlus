@@ -51,7 +51,7 @@ namespace KitchenAutomationPlus.Customs
         public override DecorationType ThemeRequired => DecorationType.Null;
         public override ShoppingTags ShoppingTags => ShoppingTags.Automation;
         public override RarityTier RarityTier => RarityTier.Rare;
-        public override PriceTier PriceTier => PriceTier.Expensive;
+        public override PriceTier PriceTier => PriceTier.ExtremelyExpensive;
         public override bool StapleWhenMissing => false;
         public override bool SellOnlyAsDuplicate => false;
         public override bool PreventSale => false;
