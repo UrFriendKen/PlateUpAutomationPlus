@@ -28,7 +28,7 @@ namespace KitchenAutomationPlus.Customs
 
             new CConveyPushItemsReversible()
             {
-                Delay = 1f,
+                Delay = 2f,
                 Push = true,
                 Grab = true,
                 GrabSpecificType = false,
@@ -63,7 +63,15 @@ namespace KitchenAutomationPlus.Customs
             (Locale.English, new ApplianceInfo()
             {
                 Name = "Grabber - Merging",
-                Description = "Automatically takes items. Rotates after grabbing an item."
+                Description = "Automatically takes items. Rotates after grabbing an item.",
+                Sections = new List<Appliance.Section>()
+                {
+                    new Appliance.Section()
+                    {
+                        Title = "Careful Conveyance",
+                        Description = "Moves items at {{-50%}} speed"
+                    }
+                }
             })
         };
 

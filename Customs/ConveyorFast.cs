@@ -52,7 +52,15 @@ namespace KitchenAutomationPlus.Customs
             (Locale.English, new ApplianceInfo()
             {
                 Name = "Conveyor - Fast",
-                Description = "Automatically moves items, but faster!"
+                Description = "Automatically moves items, but faster!",
+                Sections = new List<Appliance.Section>()
+                {
+                    new Appliance.Section()
+                    {
+                        Title = "Reckless Handling",
+                        Description = "Moves items at {{+300%}} speed"
+                    }
+                }
             })
         };
 

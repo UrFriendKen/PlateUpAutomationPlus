@@ -27,7 +27,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.6.3";
+        public const string MOD_VERSION = "1.6.7";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.3";
         // Game version this mod is designed for in semver
@@ -46,11 +46,13 @@ namespace KitchenAutomationPlus
         public const string GRABBER_ALLOW_ROTATE_DURING_DAY_ID = "grabberAllowRotateDuringDay";
         public const string SMART_GRABBER_ALLOW_FILTER_CHANGE_DURING_DAY_ID = "smartGrabberAllowFilterChangeDuringDay";
         public const string VARIABLE_PROVIDER_ALLOW_SWITCH_DURING_NIGHT_ID = "variableProviderAllowSwitchDuringNight";
+        public const string SPAWN_DIRTY_PLATES_PRACTICE_ID = "spawnDirtyPlatesPractice";
         public const string TELEPORTER_ALLOW_UNASSIGN_ID = "teleporterAllowUnassign";
         public const string BIN_GRAB_LEVEL_ID = "binGrabLevel";
         public const string DISHWASHER_AUTO_START_ID = "dishwasherAutoStart";
         public const string MICROWAVE_AUTO_START_ID = "microwaveAutoStart";
         public const string PORTIONER_DISALLOW_AUTO_SPLIT_MERGE = "portionerDisallowAutoSplitMerge";
+        public const string GAS_OVERRIDE_ALWAYS_ENABLED_ID = "gasOverrideAlwaysEnabled";
         public const string LAZY_MIXER_ENABLED_ID = "lazyMixerEnabled";
         public const string GRABBER_MIXER_ENABLED_ID = "grabberMixerEnabled";
         public const string SMART_GRABBER_ROTATING_ENABLED_ID = "smartGrabberRotatingEnabled";
@@ -104,6 +106,7 @@ namespace KitchenAutomationPlus
                 {
                     for (int i = 0; i < customGrabbers.Count; i++)
                     {
+                        Main.LogInfo(customGrabbers[i]);
                         grabber.Upgrades.Add(customGrabbers[i]);
                         if (conveyorFast != null)
                         {
@@ -140,57 +143,37 @@ namespace KitchenAutomationPlus
                 }
             }
 
+            List<Appliance> customMixers = new List<Appliance>();
             Appliance lazymixer = GetModdedGDO<Appliance, LazyMixer>();
-            if (lazymixer != null)
-            {
-                if (PrefManager.Get<bool>(LAZY_MIXER_ENABLED_ID))
-                {
-                    Appliance mixer = GDOUtils.GetExistingGDO(ApplianceReferences.Mixer) as Appliance;
-                    Appliance conveyorMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerPusher) as Appliance;
-                    Appliance rapidMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerRapid) as Appliance;
-                    if (mixer != null && conveyorMixer != null && rapidMixer != null)
-                    {
-                        mixer.Upgrades.Add(lazymixer);
-                        if (!PrefManager.Get<bool>(GRABBER_MIXER_ENABLED_ID))
-                        {
-                            conveyorMixer.Upgrades.Add(lazymixer);
-                            conveyorMixer.Upgrades.Remove(rapidMixer);
-                        }
-                    }
-                }
-                else
-                {
-                    lazymixer.IsPurchasable = false;
-                    lazymixer.IsPurchasableAsUpgrade = false;
-                }
-            }
-
-
+            if (lazymixer != null && PrefManager.Get<bool>(LAZY_MIXER_ENABLED_ID))
+                customMixers.Add(lazymixer);
 
             Appliance grabbermixer = GetModdedGDO<Appliance, GrabberMixer>();
-            if (grabbermixer != null)
+            if (grabbermixer != null && PrefManager.Get<bool>(GRABBER_MIXER_ENABLED_ID))
+                customMixers.Add(grabbermixer);
+
+            if (customMixers.Count > 0)
             {
-                if (PrefManager.Get<bool>(GRABBER_MIXER_ENABLED_ID))
+                Appliance mixer = GDOUtils.GetExistingGDO(ApplianceReferences.Mixer) as Appliance;
+                Appliance conveyorMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerPusher) as Appliance;
+                Appliance rapidMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerRapid) as Appliance;
+                if (mixer != null && conveyorMixer != null && rapidMixer != null)
                 {
-                    Appliance mixer = GDOUtils.GetExistingGDO(ApplianceReferences.Mixer) as Appliance;
-                    Appliance conveyorMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerPusher) as Appliance;
-                    Appliance rapidMixer = GDOUtils.GetExistingGDO(ApplianceReferences.MixerRapid) as Appliance;
-                    if (mixer != null && conveyorMixer != null && rapidMixer != null)
+                    for (int i = 0; i < customMixers.Count; i++)
                     {
-                        mixer.Upgrades.Add(grabbermixer);
-                        if (PrefManager.Get<bool>(LAZY_MIXER_ENABLED_ID))
+                        Main.LogInfo(customMixers[i]);
+                        mixer.Upgrades.Add(customMixers[i]);
+                        if (i < customMixers.Count - 1)
                         {
-                            grabbermixer.Upgrades.Remove(rapidMixer);
-                            grabbermixer.Upgrades.Add(lazymixer);
-                            conveyorMixer.Upgrades.Add(grabbermixer);
+                            customMixers[i].Upgrades.Remove(rapidMixer);
+                            customMixers[i].Upgrades.Add(customMixers[i + 1]);
+                        }
+                        if (i == 0)
+                        {
+                            conveyorMixer.Upgrades.Add(customMixers[i]);
                             conveyorMixer.Upgrades.Remove(rapidMixer);
                         }
                     }
-                }
-                else
-                {
-                    grabbermixer.IsPurchasable = false;
-                    grabbermixer.IsPurchasableAsUpgrade = false;
                 }
             }
 
@@ -236,6 +219,28 @@ namespace KitchenAutomationPlus
                             new int[] { ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
                             new float[] { baseDuration * 1.5f, baseDuration * 2f }));
                     }
+                }
+            }
+
+
+            Appliance gasOverride = GetExistingGDO<Appliance>(ApplianceReferences.GasSafetyOverride);
+            if (gasOverride != null)
+            {
+                gasOverride.EffectCondition = new ActivatePreferenceConditional.CEffectPreferenceConditional()
+                {
+                    PreferenceID = GAS_OVERRIDE_ALWAYS_ENABLED_ID,
+                    ConditionWhenEnabled = ActivatePreferenceConditional.EffectCondition.Always,
+                    ConditionWhenDisabled = ActivatePreferenceConditional.EffectCondition.WhileBeingUsed
+                };
+            }
+
+            Appliance gasLimiter = GetExistingGDO<Appliance>(ApplianceReferences.GasLimiter);
+            if (gasOverride != null)
+            {
+                if (gasLimiter.EffectType is CApplianceSpeedModifier applianceSpeedModifier)
+                {
+                    applianceSpeedModifier.BadSpeed = float.MinValue;
+                    gasLimiter.EffectType = applianceSpeedModifier;
                 }
             }
         }
@@ -399,6 +404,12 @@ namespace KitchenAutomationPlus
                         0,
                         new int[] { 0, 1 },
                         new string[] { "Disabled", "Enabled" })
+                    .AddLabel("Gas Override")
+                    .AddOption<bool>(
+                        GAS_OVERRIDE_ALWAYS_ENABLED_ID,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "Hold to Activate", "Always On" })
                     .AddSpacer()
                     .AddSpacer()
                 .SubmenuDone()
@@ -423,6 +434,12 @@ namespace KitchenAutomationPlus
                         false,
                         new bool[] { false, true },
                         new string[] { "In Practice Mode and Day", "Anytime" })
+                    .AddLabel("Spawn Dirty Plates in Practice")
+                    .AddOption<bool>(
+                        SPAWN_DIRTY_PLATES_PRACTICE_ID,
+                        false,
+                        new bool[] { false, true },
+                        new string[] { "Disabled", "Enabled" })
                     .AddSpacer()
                     .AddSpacer()
                 .SubmenuDone()

@@ -103,9 +103,9 @@ namespace KitchenAutomationPlus
                     }
                 }
 
-                if (Has<CItemHolder>(occupant))
+                if (Require(occupant, out CItemHolder holder))
                 {
-                    if (!Require(occupant, out CItemHolderFilter itemHolderFilter) || itemHolderFilter.AllowAny || itemHolderFilter.AllowCategory(cItem.Category))
+                    if (holder.HeldItem == default && (!Require(occupant, out CItemHolderFilter itemHolderFilter) || itemHolderFilter.AllowAny || itemHolderFilter.AllowCategory(cItem.Category)))
                     {
                         return true;
                     }

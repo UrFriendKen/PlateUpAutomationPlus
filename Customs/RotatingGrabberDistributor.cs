@@ -28,7 +28,7 @@ namespace KitchenAutomationPlus.Customs
 
             new CConveyPushItemsReversible()
             {
-                Delay = 1f,
+                Delay = 2f,
                 Push = true,
                 Grab = true,
                 GrabSpecificType = false,
@@ -58,13 +58,20 @@ namespace KitchenAutomationPlus.Customs
         public override bool PreventSale => false;
         public override bool IsNonCrated => false;
 
-
         public override List<(Locale, ApplianceInfo)> InfoList => new List<(Locale, ApplianceInfo)>
         {
             (Locale.English, new ApplianceInfo()
             {
                 Name = "Grabber - Distributing",
-                Description = "Automatically takes items. Rotates after pushing an item."
+                Description = "Automatically takes items. Rotates after pushing an item.",
+                Sections = new List<Appliance.Section>()
+                {
+                    new Appliance.Section()
+                    {
+                        Title = "Careful Conveyance",
+                        Description = "Moves items at {{-50%}} speed"
+                    }
+                }
             })
         };
 

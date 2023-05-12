@@ -33,9 +33,9 @@ namespace KitchenAutomationPlus.Customs
                     CConveyPushItemsReversible grab = grabs[i];
                     SendUpdate(view.Identifier, new ViewData()
                     {
-                        PushAmount = grab.Progress,
+                        PushAmount = grab.Progress / grab.Delay,
                         State = grab.State,
-                        SmartActive = grab.GrabSpecificType,
+                        SmartActive = grab.GrabSpecificType && grab.SpecificType != 0,
                         SmartFilter = grab.SpecificType,
                         SmartFilterComponents = grab.SpecificComponents,
                         GrabDirection = Require(entity, out CConveyPushRotatable rotate) ? rotate.Target : Orientation.Up,
