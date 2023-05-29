@@ -1,11 +1,19 @@
 ﻿using Kitchen;
+using KitchenMods;
 using Unity.Entities;
 
 namespace KitchenAutomationPlus
 {
+    public struct COrphanedTeleporter : IComponentData, IModComponent
+    {
+        public Entity PreviousTarget;
+    }
+
     [UpdateBefore(typeof(ShowPingedApplianceInfo))]
     public class UnassignTeleporterGroup : InteractionSystem
     {
+        CConveyTeleport Teleport;
+
         protected override bool AllowAnyMode => true;
         protected override InteractionType RequiredType => InteractionType.Notify;
 
@@ -23,7 +31,7 @@ namespace KitchenAutomationPlus
             {
                 return false;
             }
-            if (!Require(data.Target, out CConveyTeleport teleport) || teleport.Target == default)
+            if (!Require(data.Target, out Teleport) || Teleport.Target == default)
             {
                 return false;
             }
@@ -32,12 +40,23 @@ namespace KitchenAutomationPlus
 
         protected override void Perform(ref InteractionData data)
         {
-            if (Require(data.Target, out CConveyTeleport teleport))
+            if (!Has<COrphanedTeleporter>(data.Target))
             {
-                teleport.Target = default;
-                teleport.GroupID = 0;
-                Set(data.Target, teleport);
+                if (Require(Teleport.Target, out CConveyTeleport targetTeleport) && targetTeleport.Target != default)
+                {
+                    Set(Teleport.Target, new COrphanedTeleporter()
+                    {
+                        PreviousTarget = data.Target
+                    });
+                }
             }
+            else
+            {
+                EntityManager.RemoveComponent<COrphanedTeleporter>(data.Target);
+            }
+            Teleport.Target = default;
+            Teleport.GroupID = 0;
+            Set(data.Target, Teleport);
         }
     }
 }
