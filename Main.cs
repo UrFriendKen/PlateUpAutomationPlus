@@ -27,9 +27,9 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.6.8";
+        public const string MOD_VERSION = "1.6.9";
         public const string MOD_AUTHOR = "IcedMilo";
-        public const string MOD_GAMEVERSION = ">=1.1.3";
+        public const string MOD_GAMEVERSION = ">=1.1.5";
         // Game version this mod is designed for in semver
         // e.g. ">=1.1.3" current and all future
         // e.g. ">=1.1.3 <=1.2.3" for all from/until
@@ -328,6 +328,17 @@ namespace KitchenAutomationPlus
                 .AddLabel("Automation Plus")
                 .AddInfo("Changing \"Custom Appliances\" only takes effect upon game restart.")
                 .AddSpacer()
+                .AddSubmenu("Functions", "Functions")
+                    .AddButtonWithConfirm("Make Space Outside", "Destroy ALL appliances outside and consolidate blueprints? You cannot undo this action.", delegate(GenericChoiceDecision decision)
+                    {
+                        if (Session.CurrentGameNetworkMode == GameNetworkMode.Host && decision == GenericChoiceDecision.Accept)
+                        {
+                            PreferenceActionController.MakeSpaceOutside();
+                        }
+                    })
+                    .AddSpacer()
+                    .AddSpacer()
+                .SubmenuDone()
                 .AddSubmenu("Custom Appliances", "Custom Appliances")
                     .AddLabel("Custom Appliance Settings")
                     .AddInfo("Disabling prevents Custom Apppliances from showing up. Changed settings only takes effect upon game restart.")
