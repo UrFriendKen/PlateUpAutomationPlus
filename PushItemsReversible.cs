@@ -76,6 +76,27 @@ namespace KitchenAutomationPlus
 
                 else if (CanReach(pos, vector + pos) && !Has<CPreventItemTransfer>(occupant))
                 {
+                    if (!hasPerformed && ctx.Require<CItemProvider>(occupant, out var provider) && provider.AllowRefreshes && provider.Available == 0 &&
+                        ctx.Has<CRefreshesProviderQuantity>(held.HeldItem) &&
+                        (!ctx.Require<CRefreshesSpecificProvider>(held.HeldItem, out var refreshesSpecificProvider) || refreshesSpecificProvider.Item == provider.ProvidedItem))
+                    {
+                        hasPerformed = true;
+                        if (push.Progress < push.Delay)
+                        {
+                            push.Progress += speed * dt;
+                            isPushing = true;
+                        }
+                        else
+                        {
+                            push.Progress = 0f;
+                            provider.Available = provider.Maximum;
+                            Set(occupant, provider);
+                            ctx.Destroy(held.HeldItem);
+                            held.HeldItem = default(Entity);
+                            cooldown.Remaining = cooldown.Total;
+                            push.State = CConveyPushItems.ConveyState.None;
+                        }
+                    }
                     if (!hasPerformed && ctx.Require<CItemHolder>(occupant, out var comp2))
                     {
                         bool canPush = false;

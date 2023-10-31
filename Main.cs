@@ -27,7 +27,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.6.9";
+        public const string MOD_VERSION = "1.6.10";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.5";
         // Game version this mod is designed for in semver
@@ -281,26 +281,8 @@ namespace KitchenAutomationPlus
             }
         }
 
-        public virtual HashSet<string> RequiredModNames => new HashSet<string>()
-        {
-            "PreferenceSystem"
-        };
-
         protected sealed override void OnPostActivate(Mod mod)
         {
-            List<string> missingModNames = new List<string>();
-            IEnumerable<string> loadedModNames = ModPreload.Mods.Select(x => x.Name.ToLowerInvariant());
-            foreach (string name in RequiredModNames)
-            {
-                if (loadedModNames.Contains(name.ToLowerInvariant()))
-                    continue;
-                missingModNames.Add(name);
-            }
-            if (missingModNames.Count > 0)
-            {
-                throw new ModPackLoadException($"Error! Missing dependencies. {MOD_NAME} requires that you subscribe to {(String.Join(", ", missingModNames))}.");
-            }
-
             // TODO: Uncomment the following if you have an asset bundle.
             // TODO: Also, make sure to set EnableAssetBundleDeploy to 'true' in your ModName.csproj
 
