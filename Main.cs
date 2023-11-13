@@ -27,7 +27,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.6.10";
+        public const string MOD_VERSION = "1.6.11";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.5";
         // Game version this mod is designed for in semver
@@ -97,11 +97,12 @@ namespace KitchenAutomationPlus
                 customGrabbers.Add(rotatingGrabberDistributor);
 
             Appliance conveyorFast = GetModdedGDO<Appliance, ConveyorFast>();
+            Appliance conveyor = GDOUtils.GetExistingGDO(ApplianceReferences.Grabber) as Appliance;
+            Appliance grabber = GDOUtils.GetExistingGDO(ApplianceReferences.Belt) as Appliance;
+            Appliance rotatingGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberRotatable) as Appliance;
+            Appliance smartGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberSmart) as Appliance;
             if (customGrabbers.Count > 0)
             {
-                Appliance grabber = GDOUtils.GetExistingGDO(ApplianceReferences.Grabber) as Appliance;
-                Appliance rotatingGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberRotatable) as Appliance;
-                Appliance smartGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberSmart) as Appliance;
                 if (grabber != null && smartRotatingGrabber != null && smartGrabber != null && rotatingGrabber != null)
                 {
                     for (int i = 0; i < customGrabbers.Count; i++)
@@ -126,11 +127,27 @@ namespace KitchenAutomationPlus
                 }
             }
 
+            Appliance[] baseGameBelts = new Appliance[] { conveyor, grabber, rotatingGrabber, smartGrabber };
+            foreach (Appliance appliance in baseGameBelts)
+            {
+                if ((appliance.Properties?.Count ?? 0) < 1)
+                {
+                    continue;
+                }
+                for (int i = 0; i < appliance.Properties.Count; i++)
+                {
+                    if (appliance.Properties[i] is CConveyCooldown cooldown)
+                    {
+                        cooldown.Total = 0.01f;
+                        appliance.Properties[i] = cooldown;
+                    }
+                }
+            }
+
             if (conveyorFast != null)
             {
                 if (PrefManager.Get<bool>(CONVEYOR_FAST_ENABLED_ID))
                 {
-                    Appliance conveyor = GDOUtils.GetExistingGDO(ApplianceReferences.Belt) as Appliance;
                     if (conveyor != null)
                     {
                         conveyor.Upgrades.Add(conveyorFast);

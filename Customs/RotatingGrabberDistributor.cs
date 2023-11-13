@@ -38,7 +38,7 @@ namespace KitchenAutomationPlus.Customs
 
             new CConveyCooldown()
             {
-                Total = 0f
+                Total = 0.01f
             },
 
             new CItemHolder(),
