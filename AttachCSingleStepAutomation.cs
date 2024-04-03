@@ -7,11 +7,6 @@ using Unity.Entities;
 
 namespace KitchenAutomationPlus
 {
-    public struct CSingleStepAutomation : IComponentData
-    {
-        public int PreprocessedItemID;
-    }
-
     public class AttachCSingleStepAutomation : StartOfDaySystem
     {
         private EntityQuery applianceQuery;

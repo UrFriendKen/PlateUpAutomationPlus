@@ -7,12 +7,6 @@ using UnityEngine;
 
 namespace KitchenAutomationPlus
 {
-    public struct CAutoConveyRotate : IComponentData, IApplianceProperty, IAttachableProperty, IModComponent
-    {
-        public bool AfterGrab;
-        public bool Primed;
-    }
-
     public class AutoRotatePush : GameSystemBase
     {
         EntityQuery _grabberQuery;
