@@ -48,13 +48,13 @@ namespace KitchenAutomationPlus
                         Entity blueprintEntity = blueprintEntities[i];
                         CPosition oldBlueprintPosition = blueprintPositions[i];
 
-                        if (!LayoutHelpers.IsOutsidePlayable(GetTile(oldBlueprintPosition).Type))
+                        if (!LayoutHelpers.IsOutsidePlayable(TileManager.GetTile(oldBlueprintPosition).Type))
                         {
                             continue;
                         }
                         Set(blueprintEntity, newBlueprintPosition);
-                        SetOccupant(oldBlueprintPosition, default(Entity), OccupancyLayer.Default);
-                        SetOccupant(newBlueprintPosition, blueprintEntity, OccupancyLayer.Default);
+                        TileManager.SetOccupant(oldBlueprintPosition, default(Entity), OccupancyLayer.Default);
+                        TileManager.SetOccupant(newBlueprintPosition, blueprintEntity, OccupancyLayer.Default);
                     }
                 }
             }

@@ -105,8 +105,8 @@ namespace KitchenAutomationPlus
 
                 Vector3 grabFromVector = pos.Rotation.RotateOrientation(grabFrom).ToOffset();
 
-                Entity occupant = GetOccupant(grabFromVector + pos);
-                if (CanReach(pos, grabFromVector + pos) && !Has<CPreventItemTransfer>(occupant))
+                Entity occupant = TileManager.GetOccupant(grabFromVector + pos);
+                if (TileManager.CanReach(pos, grabFromVector + pos) && !Has<CPreventItemTransfer>(occupant))
                 {
                     CConveyPushItems.ConveyState occupantConveyState = CConveyPushItems.ConveyState.None;
                     if (Require(occupant, out CConveyPushItemsReversible cPushReversible))

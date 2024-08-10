@@ -63,9 +63,9 @@ namespace KitchenAutomationPlus
 
         private bool IsValidTarget(Vector3 from, Vector3 to, Entity heldItem, bool isGrab)
         {
-            if (!CanReach(from, to))
+            if (!TileManager.CanReach(from, to))
                 return false;
-            Entity occupant = GetOccupant(to);
+            Entity occupant = TileManager.GetOccupant(to);
             if (occupant == default)
                 return false;
             if (Has<CPreventItemTransfer>(occupant))

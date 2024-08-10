@@ -78,12 +78,12 @@ namespace KitchenAutomationPlus.Customs
 
         bool isRegistered = false;
 
-        static FieldInfo playOnActive = ReflectionUtils.GetField<ApplianceProcessView>("PlayOnActive", BindingFlags.NonPublic | BindingFlags.Instance);
-        static FieldInfo animator = ReflectionUtils.GetField<ApplianceProcessView>("Animator", BindingFlags.NonPublic | BindingFlags.Instance);
-        static FieldInfo clip = ReflectionUtils.GetField<ApplianceProcessView>("Clip", BindingFlags.NonPublic | BindingFlags.Instance);
-        static FieldInfo sound = ReflectionUtils.GetField<ApplianceProcessView>("Sound", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo playOnActive = typeof(ApplianceProcessView).GetField("PlayOnActive", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo animator = typeof(ApplianceProcessView).GetField("Animator", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo clip = typeof(ApplianceProcessView).GetField("Clip", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo sound = typeof(ApplianceProcessView).GetField("Sound", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        static FieldInfo pushObject = ReflectionUtils.GetField<ConveyItemsView>("PushObject", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo pushObject = typeof(ConveyItemsView).GetField("PushObject", BindingFlags.NonPublic | BindingFlags.Instance);
 
         public override void OnRegister(Appliance gameDataObject)
         {

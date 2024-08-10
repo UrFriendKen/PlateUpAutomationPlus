@@ -72,11 +72,11 @@ namespace KitchenAutomationPlus.Customs
 
         bool isRegistered = false;
 
-        static FieldInfo pushObject = ReflectionUtils.GetField<ConveyItemsView>("PushObject", BindingFlags.NonPublic | BindingFlags.Instance);
-        static FieldInfo smartActive = ReflectionUtils.GetField<ConveyItemsView>("SmartActive", BindingFlags.NonPublic | BindingFlags.Instance);
-        static FieldInfo smartInactive = ReflectionUtils.GetField<ConveyItemsView>("SmartInactive", BindingFlags.NonPublic | BindingFlags.Instance);
-        static FieldInfo typeContainer = ReflectionUtils.GetField<ConveyItemsView>("TypeContainer", BindingFlags.NonPublic | BindingFlags.Instance);
-        static FieldInfo animator = ReflectionUtils.GetField<ConveyItemsView>("Animator", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo pushObject = typeof(ConveyItemsView).GetField("PushObject", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo smartActive = typeof(ConveyItemsView).GetField("SmartActive", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo smartInactive = typeof(ConveyItemsView).GetField("SmartInactive", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo typeContainer = typeof(ConveyItemsView).GetField("TypeContainer", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo animator = typeof(ConveyItemsView).GetField("Animator", BindingFlags.NonPublic | BindingFlags.Instance);
 
 
 

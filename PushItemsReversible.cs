@@ -68,13 +68,13 @@ namespace KitchenAutomationPlus
                 }
 
                 Vector3 vector = pos.Rotation.RotateOrientation(pushTo).ToOffset();
-                Entity occupant = GetOccupant(vector + pos);
+                Entity occupant = TileManager.GetOccupant(vector + pos);
                 if (push.IgnoreProcessingItems && Require(held.HeldItem, out CItemUndergoingProcess component) && !component.IsBad)
                 {
                     isPushing = false;
                 }
 
-                else if (CanReach(pos, vector + pos) && !Has<CPreventItemTransfer>(occupant))
+                else if (TileManager.CanReach(pos, vector + pos) && !Has<CPreventItemTransfer>(occupant))
                 {
                     if (!hasPerformed && ctx.Require<CItemProvider>(occupant, out var provider) && provider.AllowRefreshes && provider.Available == 0 &&
                         ctx.Has<CRefreshesProviderQuantity>(held.HeldItem) &&

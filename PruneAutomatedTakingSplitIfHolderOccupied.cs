@@ -33,7 +33,7 @@ namespace KitchenAutomationPlus
                 }
 
                 if (Require<CAutomatedInteractor>(proposal.Destination, out CAutomatedInteractor auto) && auto.IsHeld && Require(proposal.Destination, out CAppliance appliance) && appliance.ID == ApplianceReferences.Portioner && 
-                    Require(proposal.Destination, out CItemHolder holder) && holder.HeldItem != default&& proposal.Flags.HasFlag(TransferFlags.Split) && Require(proposal.Destination, out CPosition position) && GetOccupant(position.ForwardPosition) == proposal.Source)
+                    Require(proposal.Destination, out CItemHolder holder) && holder.HeldItem != default&& proposal.Flags.HasFlag(TransferFlags.Split) && Require(proposal.Destination, out CPosition position) && TileManager.GetOccupant(position.ForwardPosition) == proposal.Source)
                 {
                     if (Main.PrefManager.Get<bool>(Main.PORTIONER_DISALLOW_AUTO_SPLIT_MERGE))
                     {

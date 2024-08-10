@@ -72,7 +72,7 @@ namespace KitchenAutomationPlus
                     }
 
                     Vector3 vector = pos.Rotation.RotateOrientation(grabFrom).ToOffset();
-                    Entity occupant = GetOccupant(pos + vector);
+                    Entity occupant = TileManager.GetOccupant(pos + vector);
                     if (!Require(occupant, out CApplianceBin bin))
                     {
                         continue;
@@ -81,7 +81,7 @@ namespace KitchenAutomationPlus
                     {
                         continue;
                     }
-                    if (!CanReach(pos, pos + vector) || HasComponent<CPreventItemTransfer>(occupant) || bin.SelfEmptyTime > 0)
+                    if (!TileManager.CanReach(pos, pos + vector) || HasComponent<CPreventItemTransfer>(occupant) || bin.SelfEmptyTime > 0)
                     {
                         continue;
                     }
