@@ -1,8 +1,9 @@
-﻿using Unity.Entities;
+﻿using KitchenMods;
+using Unity.Entities;
 
 namespace KitchenAutomationPlus
 {
-    public struct CSingleStepAutomation : IComponentData
+    public struct CSingleStepAutomation : IComponentData, IModComponent
     {
         public int PreprocessedItemID;
     }

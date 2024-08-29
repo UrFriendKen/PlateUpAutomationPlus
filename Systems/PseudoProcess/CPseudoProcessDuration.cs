@@ -1,4 +1,5 @@
 ﻿using KitchenData;
+using KitchenMods;
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -6,7 +7,7 @@ using Unity.Entities;
 
 namespace KitchenAutomationPlus.Systems.PseudoProcess
 {
-    public struct CPseudoProcessDuration : IComponentData, IApplianceProperty
+    public struct CPseudoProcessDuration : IComponentData, IApplianceProperty, IModComponent
     {
         public float BaseDuration;
         private FixedListInt128 Items;

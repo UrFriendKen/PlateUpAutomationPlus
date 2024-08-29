@@ -1,8 +1,9 @@
-﻿using Unity.Entities;
+﻿using KitchenMods;
+using Unity.Entities;
 
 namespace KitchenAutomationPlus
 {
-    public struct SIsSpecificTypeInhibitSystemRunning : IComponentData
+    public struct SIsSpecificTypeInhibitSystemRunning : IComponentData, IModComponent
     {
     }
 }

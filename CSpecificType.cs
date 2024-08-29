@@ -1,9 +1,10 @@
 ﻿using KitchenData;
+using KitchenMods;
 using Unity.Entities;
 
 namespace KitchenAutomationPlus
 {
-    public struct CSpecificType : IComponentData
+    public struct CSpecificType : IComponentData, IModComponent
     {
         public int SpecificType;
 

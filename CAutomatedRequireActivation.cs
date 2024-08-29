@@ -1,8 +1,9 @@
-﻿using Unity.Entities;
+﻿using KitchenMods;
+using Unity.Entities;
 
 namespace KitchenAutomationPlus
 {
-    internal struct CAutomatedRequireActivation : IComponentData
+    internal struct CAutomatedRequireActivation : IComponentData, IModComponent
     {
         public bool IsSingleStep;
         public bool IsRequireItem;

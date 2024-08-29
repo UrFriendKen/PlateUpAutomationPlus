@@ -1,5 +1,6 @@
 ﻿using Kitchen;
 using KitchenLib.References;
+using KitchenMods;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -7,7 +8,7 @@ namespace KitchenAutomationPlus
 {
     internal class AutoStartDishwasher : RestaurantSystem
     {
-        public struct CHasActivated : IComponentData { };
+        public struct CHasActivated : IComponentData, IModComponent { };
 
         EntityQuery ApplianceQuery;
 

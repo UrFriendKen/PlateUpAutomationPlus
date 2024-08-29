@@ -1,4 +1,5 @@
 ﻿using KitchenData;
+using KitchenMods;
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -6,7 +7,7 @@ using Unity.Entities;
 
 namespace KitchenAutomationPlus.Systems.PseudoProcess
 {
-    public struct CDynamicChangeProvider : IComponentData , IApplianceProperty
+    public struct CDynamicChangeProvider : IComponentData , IApplianceProperty, IModComponent
     {
         private FixedListInt128 Before;
         private FixedListInt128 After;

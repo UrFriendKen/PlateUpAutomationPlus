@@ -1,5 +1,6 @@
 ﻿using Kitchen;
 using KitchenLib.References;
+using KitchenMods;
 using System.Runtime.InteropServices;
 using Unity.Entities;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace KitchenAutomationPlus
     public class SpawnDirtyPlatesPractice : DaySystem
     {
         [StructLayout(LayoutKind.Sequential, Size = 1)]
-        private struct SDirtyPlatesProvider : IComponentData
+        private struct SDirtyPlatesProvider : IComponentData, IModComponent
         {
         }
 

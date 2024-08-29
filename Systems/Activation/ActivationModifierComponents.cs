@@ -6,7 +6,7 @@ using Unity.Entities;
 
 namespace KitchenAutomationPlus.Systems.Activation
 {
-    public struct CConditionalActivation : IComponentData
+    public struct CConditionalActivation : IComponentData, IModComponent
     {
         public bool IsAutomatic;
         public bool ActivateWhenFull;
@@ -82,11 +82,11 @@ namespace KitchenAutomationPlus.Systems.Activation
         }
     }
 
-    public struct CInhibitedActivation : IComponentData { }
+    public struct CInhibitedActivation : IComponentData, IModComponent { }
 
-    public struct CWasInhibited : IComponentData { }
+    public struct CWasInhibited : IComponentData, IModComponent { }
 
-    public struct CActivationNonpersistentCleanupMarker : IComponentData { }
+    public struct CActivationNonpersistentCleanupMarker : IComponentData, IModComponent { }
 
-    public struct CPerformAutomatedActivation : IComponentData { }
+    public struct CPerformAutomatedActivation : IComponentData, IModComponent { }
 }
