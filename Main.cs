@@ -27,7 +27,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.6.14";
+        public const string MOD_VERSION = "1.6.15";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.5";
         // Game version this mod is designed for in semver
@@ -97,8 +97,8 @@ namespace KitchenAutomationPlus
                 customGrabbers.Add(rotatingGrabberDistributor);
 
             Appliance conveyorFast = GetModdedGDO<Appliance, ConveyorFast>();
-            Appliance conveyor = GDOUtils.GetExistingGDO(ApplianceReferences.Grabber) as Appliance;
-            Appliance grabber = GDOUtils.GetExistingGDO(ApplianceReferences.Belt) as Appliance;
+            Appliance conveyor = GDOUtils.GetExistingGDO(ApplianceReferences.Belt) as Appliance;
+            Appliance grabber = GDOUtils.GetExistingGDO(ApplianceReferences.Grabber) as Appliance;
             Appliance rotatingGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberRotatable) as Appliance;
             Appliance smartGrabber = GDOUtils.GetExistingGDO(ApplianceReferences.GrabberSmart) as Appliance;
             if (customGrabbers.Count > 0)
