@@ -27,7 +27,7 @@ namespace KitchenAutomationPlus
         // Mod Version must follow semver notation e.g. "1.2.3"
         public const string MOD_GUID = "IcedMilo.PlateUp.AutomationPlus";
         public const string MOD_NAME = "AutomationPlus";
-        public const string MOD_VERSION = "1.6.15";
+        public const string MOD_VERSION = "1.6.16";
         public const string MOD_AUTHOR = "IcedMilo";
         public const string MOD_GAMEVERSION = ">=1.1.5";
         // Game version this mod is designed for in semver
@@ -198,7 +198,7 @@ namespace KitchenAutomationPlus
             Appliance dishWasher = GetExistingGDO<Appliance>(ApplianceReferences.DishWasher);
             if (dishWasher != null)
             {
-                TryRemoveComponentsFromAppliance<Appliance>(ApplianceReferences.DishWasher, new Type[] { typeof(CChangeProviderAfterDuration), typeof(CChangeProviderWhenEmpty) });
+                TryRemoveComponentsFromGDO<Appliance>(ApplianceReferences.DishWasher, new Type[] { typeof(CDynamicItemProvider), typeof(CChangeProviderAfterDuration), typeof(CChangeProviderWhenEmpty) });
 
                 dishWasher.Properties.Add(new CDynamicItemProvider()
                 {
@@ -206,23 +206,41 @@ namespace KitchenAutomationPlus
                 });
 
                 CDynamicChangeProvider dishWasherDynamicProvider = new CDynamicChangeProvider(
-                    new int[] { ItemReferences.PlateDirty, ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
-                    new int[] { ItemReferences.Plate, ItemReferences.Plate, ItemReferences.Wok });
+                    new int[] { ItemReferences.PlateDirtywithfood },
+                    new int[] { ItemReferences.Plate });
 
-                int drinksModCupBobaDirty = -551182937;
-                int applianceLibCup = -1951140858;
-                Main.LogInfo("Attempting to add DrinksMod boba cups to dishwasher DynamicProvider");
-                dishWasherDynamicProvider.Add(drinksModCupBobaDirty, applianceLibCup);
+                //CDynamicChangeProvider dishWasherDynamicProvider = new CDynamicChangeProvider(
+                //    new int[] { ItemReferences.PlateDirty, ItemReferences.PlateDirtywithfood, ItemReferences.WokBurned },
+                //    new int[] { ItemReferences.Plate, ItemReferences.Plate, ItemReferences.Wok });
+                Main.LogWarning($"Updating dishwasher DynamicProvider...");
+                foreach (Item item in GameData.Main.Get<Item>())
+                {
+                    if (item?.DerivedProcesses == default)
+                        continue;
+                    foreach (Item.ItemProcess itemProcess in item.DerivedProcesses)
+                    {
+                        if (itemProcess.Process?.ID != 620897674) // Clean
+                            continue;
 
-                int miniCafeSmallMugDirty = 213976453;
-                int miniCafeSmallMug = 1721483158;
-                Main.LogInfo("Attempting to add MiniCafe small mugs to dishwasher DynamicProvider");
-                dishWasherDynamicProvider.Add(miniCafeSmallMugDirty, miniCafeSmallMug);
+                        Main.LogInfo($"Add {item} cleans to {(itemProcess.Result ? (itemProcess.Result.name ?? $"ID {itemProcess.Result.ID}") : "null")} to dishwasher DynamicProvider");
+                        dishWasherDynamicProvider.Add(item.ID, itemProcess.Result?.ID ?? 0);
+                    }
+                }
 
-                int miniCafeBigMugDirty = 1527576247;
-                int miniCafeBigMug = -895445170;
-                Main.LogInfo("Attempting to add MiniCafe big mugs to dishwasher DynamicProvider");
-                dishWasherDynamicProvider.Add(miniCafeBigMugDirty, miniCafeBigMug);
+                //int drinksModCupBobaDirty = -551182937;
+                //int applianceLibCup = -1951140858;
+                //Main.LogInfo("Attempting to add DrinksMod boba cups to dishwasher DynamicProvider");
+                //dishWasherDynamicProvider.Add(drinksModCupBobaDirty, applianceLibCup);
+
+                //int miniCafeSmallMugDirty = 213976453;
+                //int miniCafeSmallMug = 1721483158;
+                //Main.LogInfo("Attempting to add MiniCafe small mugs to dishwasher DynamicProvider");
+                //dishWasherDynamicProvider.Add(miniCafeSmallMugDirty, miniCafeSmallMug);
+
+                //int miniCafeBigMugDirty = 1527576247;
+                //int miniCafeBigMug = -895445170;
+                //Main.LogInfo("Attempting to add MiniCafe big mugs to dishwasher DynamicProvider");
+                //dishWasherDynamicProvider.Add(miniCafeBigMugDirty, miniCafeBigMug);
 
                 dishWasher.Properties.Add(dishWasherDynamicProvider);
 
@@ -507,7 +525,7 @@ namespace KitchenAutomationPlus
             return GDOUtils.GetCastedGDO<T>(modName, name);
         }
 
-        private bool TryRemoveComponentsFromAppliance<T>(int id, Type[] componentTypesToRemove) where T : GameDataObject
+        private bool TryRemoveComponentsFromGDO<T>(int id, Type[] componentTypesToRemove) where T : GameDataObject
         {
             T gDO = Find<T>(id);
 
