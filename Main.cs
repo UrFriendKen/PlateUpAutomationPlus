@@ -348,7 +348,7 @@ namespace KitchenAutomationPlus
                 .AddSubmenu("Functions", "Functions")
                     .AddButtonWithConfirm("Make Space Outside", "Destroy ALL appliances outside and consolidate blueprints? You cannot undo this action.", delegate(GenericChoiceDecision decision)
                     {
-                        if (Session.CurrentGameNetworkMode == GameNetworkMode.Host && decision == GenericChoiceDecision.Accept)
+                        if (Session.HostIdentifier == 0 && decision == GenericChoiceDecision.Accept)
                         {
                             PreferenceActionController.MakeSpaceOutside();
                         }
