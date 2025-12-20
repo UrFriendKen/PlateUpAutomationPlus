@@ -10,7 +10,6 @@ namespace KitchenAutomationPlus
     // Why does this break AutoMop???
     //[UpdateBefore(typeof(InteractionGroup))]
     [UpdateAfter(typeof(GroupReceiveDrink))]
-    [UpdateAfter(typeof(GroupReceiveItem))]
     [UpdateAfter(typeof(GroupReceiveBonus))]
     [UpdateAfter(typeof(ApplyItemProcesses))]
     public class GrabItemsReversible : GameSystemBase
